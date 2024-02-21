@@ -1,5 +1,5 @@
 <script setup>
-import {Collection, DataAnalysis, DataBoard, Setting, Tickets, User, Star} from "@element-plus/icons-vue";
+import {Collection, DataAnalysis, DataBoard, Setting, Tickets, User, Star, MessageBox} from "@element-plus/icons-vue";
 
 </script>
 
@@ -20,7 +20,7 @@ import {Collection, DataAnalysis, DataBoard, Setting, Tickets, User, Star} from 
             <span>Дашборд</span>
           </el-menu-item>
         </RouterLink>
-        <RouterLink to="/projects">
+        <RouterLink to="/projects/list">
           <el-menu-item index="2">
             <el-icon><Collection /></el-icon>
             <span>Проекты</span>
@@ -32,10 +32,12 @@ import {Collection, DataAnalysis, DataBoard, Setting, Tickets, User, Star} from 
             <span>Задачи</span>
           </el-menu-item>
         </RouterLink>
-        <el-menu-item index="4">
-          <el-icon><DataBoard /></el-icon>
-          <span>Доски задач</span>
-        </el-menu-item>
+        <RouterLink to="/desks">
+          <el-menu-item index="4">
+            <el-icon><DataBoard /></el-icon>
+            <span>Доски задач</span>
+          </el-menu-item>
+        </RouterLink>
         <el-sub-menu index="1-1">
           <template #title>
             <el-icon><setting /></el-icon>
@@ -45,6 +47,12 @@ import {Collection, DataAnalysis, DataBoard, Setting, Tickets, User, Star} from 
             <el-menu-item index="5">
               <el-icon><user /></el-icon>
               <span>Пользователи</span>
+            </el-menu-item>
+          </RouterLink>
+          <RouterLink to="/admin/roles">
+            <el-menu-item index="6">
+              <el-icon><MessageBox /></el-icon>
+              <span>Группы</span>
             </el-menu-item>
           </RouterLink>
           <RouterLink to="/admin/roles">

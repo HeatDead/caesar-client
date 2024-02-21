@@ -11,6 +11,12 @@ import LoginView from "@/views/LoginView.vue";
 import AddProject from "@/components/admin/AddProject.vue";
 import AddTask from "@/components/task/AddTask.vue";
 import DashboardView from "@/views/DashboardView.vue";
+import TaskInfoView from "@/views/TaskInfoView.vue";
+import DesksView from "@/views/DesksView.vue";
+import ProjectView from "@/views/ProjectView.vue";
+import ProjectTasks from "@/components/project/ProjectTasks.vue";
+import DeskView from "@/views/DeskView.vue";
+import ProjectDesks from "@/components/project/ProjectDesks.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -31,11 +37,34 @@ const router = createRouter({
     },
     {
       path: "/projects",
-      component: ProjectsView,
+      children: [
+        {
+          path: "list",
+          component: ProjectsView,
+        },
+        {
+          path: ":id",
+          component: ProjectView,
+          children: [
+            {
+              path: "tasks",
+              component: ProjectTasks
+            },
+            {
+              path: "desks",
+              component: ProjectDesks
+            }
+          ]
+        },
+      ]
     },
     {
       path: "/tasks",
       component: TasksView,
+    },
+    {
+      path: "/task/:id",
+      component: TaskInfoView,
     },
     {
       path: "/tasks/add",
@@ -43,7 +72,15 @@ const router = createRouter({
     },
     {
       path: "/desks",
-      component: HomeView,
+      component: DesksView,
+    },
+    {
+      path: "/desk/:deskId",
+      component: DeskView
+    },
+    {
+      path: "/projects/:projectId/desk/:deskId",
+      component: DeskView
     },
     {
       path: "/admin",

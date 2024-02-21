@@ -1,0 +1,30 @@
+.status-new {
+    background-color: #909399;
+}
+
+.status-canceled {
+    background-color: #b25252;
+}
+
+.status-work {
+    background-color: #3375b9;
+}
+
+.status-completed {
+    background-color: #4e8e2f;
+}
+
+.status-info {
+    background-color: #a77730;
+}
+
+.status-base {
+    display: flex;
+    border-radius: calc(var(--el-border-radius-base) - 1px);
+    width: fit-content;
+    height: 24px;
+    box-sizing: border-box;
+    font-size: 14px;
+    padding: 2px 8px;
+    align-items: center;
+}

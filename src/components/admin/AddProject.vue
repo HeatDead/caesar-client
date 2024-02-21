@@ -15,7 +15,7 @@ const addProject = () => {
 </script>
 
 <template>
-  <RouterLink to="/admin/projects">Назад</RouterLink>
+  <RouterLink to="/projects">Назад</RouterLink>
   <el-input v-model="project.name" class="w-100 m-2" placeholder="Название" />
   <el-input
       v-model="project.description"

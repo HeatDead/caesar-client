@@ -16,9 +16,6 @@ onMounted(() => {
 
 <template>
   <h3>Проекты</h3>
-  <RouterLink to="/projects/add">
-    <el-button>Добавить</el-button>
-  </RouterLink>
   <el-table :data="projects" style="width: 100%">
     <el-table-column prop="id" label="ID" width="150"/>
     <el-table-column prop="name" label="Название" width="180"/>

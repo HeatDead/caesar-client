@@ -17,18 +17,21 @@ const getTask = async (id) => {
     return res.data
 }
 
-const addTask = (task) => {
-    instance.post("/task", {
-        name: task.name,
-        description: task.description,
-        projectId: task.projectId
-    }).then(() => {
-        router.push('/tasks')
-    }).catch((e) => {
-        console.log(e)
+const addTask = async (name, projectId) => {
+    await instance.post("/task", {
+        name: name,
+        projectId: projectId
+    })
+}
+
+const addTaskToPanel = async (name, projectId, panelId) => {
+    await instance.post("/task/panel", {
+        name: name,
+        projectId: projectId,
+        panelId: panelId
     })
 }
 
 export default {
-    getTasks, addTask, getTask, getTasksByProject
+    getTasks, addTask, addTaskToPanel, getTask, getTasksByProject
 }

@@ -1,7 +1,6 @@
 <script setup>
 import {onMounted, ref, computed} from "vue";
-import taskF from "@/api/taskApi";
-import {MoreFilled, Plus, Search, Tickets} from "@element-plus/icons-vue";
+import {Close, MoreFilled, Plus, Search, Tickets} from "@element-plus/icons-vue";
 import router from "@/router";
 import taskApi from "@/api/taskApi";
 import TaskStatus from "@/components/task/TaskStatus.vue";
@@ -14,6 +13,8 @@ let props = defineProps({
 let tasks = ref([])
 let loading = ref(true)
 const drawer = ref(false)
+const visible = ref(false)
+const newTaskName = ref('')
 
 const search = ref('')
 
@@ -39,16 +40,24 @@ const getTask = async (id) => {
 
 const getTasks = async () => {
   if (props.projectId) {
-    await taskF.getTasksByProject(props.projectId).then((value) => {
+    await taskApi.getTasksByProject(props.projectId).then((value) => {
       tasks.value = value
       loading.value = false
     })
   } else {
-    await taskF.getTasks().then((value) => {
+    await taskApi.getTasks().then((value) => {
       tasks.value = value
       loading.value = false
     })
   }
+}
+
+const addTask = async () => {
+  await taskApi.addTask(newTaskName.value, props.projectId).then(() => {
+    getTasks()
+    newTaskName.value = ''
+    visible.value = false
+  })
 }
 
 const taskInfo = (id) => {
@@ -82,7 +91,20 @@ onMounted(() => {
     <el-table-column prop="" label="Дата завершения" width="176"/>
     <el-table-column fixed="right" width="60">
       <template #header>
-        <el-button class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
+        <el-popover :visible="visible" placement="left-start" :width="300"> <!-- Создание проекта -->
+          <header class="crp-header">
+            <h3 style="margin: 0">Создать задачу</h3>
+            <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
+          </header>
+          <el-input v-model="newTaskName" style="margin-bottom: 10px" type="text" placeholder="Название задачи"></el-input>
+          <div style="text-align: right; margin: 0">
+            <el-button :disabled="!newTaskName" type="primary" @click="addTask"
+            >Создать</el-button>
+          </div>
+          <template #reference>
+            <el-button @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
+          </template>
+        </el-popover>
       </template>
       <template #default="scope">
       <el-popover placement="right-start" :width="250" trigger="click">
@@ -103,6 +125,14 @@ onMounted(() => {
 </template>
 
 <style scoped>
+.crp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px !important;
+  font-family: 'Roboto', sans-serif;
+}
+
 .clickable{
   transition: 0.2s;
   display: block;

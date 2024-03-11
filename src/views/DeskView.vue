@@ -6,6 +6,7 @@ import deskApi from "@/api/deskApi";
 import {useRoute} from "vue-router";
 import taskF from "@/api/taskApi";
 import projectApi from "@/api/projectApi";
+import taskApi from "@/api/taskApi";
 
 const route = useRoute()
 const id = route.params.deskId;
@@ -71,6 +72,18 @@ const addPanel = async () => {
 
 const addTask = async (panelId, taskId) => {
   await deskApi.addTaskToPanel(panelId, taskId).then(() => {
+    getPanels()
+  })
+}
+
+const addTaskToPanel = async (taskName, projectId, panelId) => {
+  await taskApi.addTaskToPanel(taskName, projectId, panelId).then(() => {
+    getPanels()
+  })
+}
+
+const removeFromPanel = (panelId, taskId) => {
+  deskApi.removeTaskFromPanel(panelId, taskId).then(() => {
     getPanels()
   })
 }
@@ -143,7 +156,7 @@ onMounted(() => {
                 <div v-else>
                   <el-input v-model="panel.newTaskName" style="margin-bottom: 10px" type="text" placeholder="Название задачи"></el-input>
                   <div style="text-align: right; margin: 0">
-                    <el-button :disabled="!panel.newTaskName" type="primary" @click="addTask(panel.id, panel.addTaskSelected)"
+                    <el-button :disabled="!panel.newTaskName" type="primary" @click="addTaskToPanel(panel.newTaskName, pjId, panel.id)"
                     >Создать и добавить</el-button>
                   </div>
                 </div>
@@ -167,7 +180,7 @@ onMounted(() => {
                 <div class="settings">
                   <el-button @click="loadTask(task.id)" class="setting_button">Подробнее</el-button>
                   <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
-                  <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить с панели</el-button>
+                  <el-button @click="removeFromPanel(panel.id, task.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить с панели</el-button>
                   <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
                 </div>
 

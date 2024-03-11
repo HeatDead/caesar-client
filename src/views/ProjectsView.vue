@@ -26,6 +26,7 @@ const filterTableData = computed(() =>
 const addProject = () => {
   projectF.addProject(newProjectName.value).then(() => {
     visible.value = false
+    newProjectName.value = ''
     getProjects()
   })
 }

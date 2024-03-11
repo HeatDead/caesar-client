@@ -9,29 +9,6 @@ const edit = ref(false)
 const startDate = ref('')
 const deadlineDate = ref('')
 
-const shortcuts = [
-  {
-    text: 'Сегодня',
-    value: new Date(),
-  },
-  {
-    text: 'Вчера',
-    value: () => {
-      const date = new Date()
-      date.setTime(date.getTime() - 3600 * 1000 * 24)
-      return date
-    },
-  },
-  {
-    text: 'Через неделю',
-    value: () => {
-      const date = new Date()
-      date.setTime(date.getTime() + 3600 * 1000 * 24 * 7)
-      return date
-    },
-  },
-]
-
 const disabledDate = (time) => {
   return time.getTime() < (Date.now() - 3600 * 1000 * 24)
 }
@@ -99,7 +76,6 @@ const handleClose = () => {
                               type="date"
                               placeholder="Выберете дату начала"
                               :disabled-date="disabledDate"
-                              :shortcuts="shortcuts"
                               size="default"
                           />
             </span>
@@ -113,7 +89,6 @@ const handleClose = () => {
                               type="date"
                               placeholder="Выберете дату дедлайна"
                               :disabled-date="disabledDate"
-                              :shortcuts="shortcuts"
                               size="default"
                           />
             </span>

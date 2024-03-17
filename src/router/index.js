@@ -17,6 +17,7 @@ import ProjectView from "@/views/ProjectView.vue";
 import ProjectTasks from "@/components/project/ProjectTasks.vue";
 import DeskView from "@/views/DeskView.vue";
 import ProjectDesks from "@/components/project/ProjectDesks.vue";
+import UsersView from "@/views/UsersView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -83,13 +84,13 @@ const router = createRouter({
       component: DeskView
     },
     {
+      path: "/admin/users",
+      component: UsersView
+    },
+    {
       path: "/admin",
       component: AdminView,
       children: [
-        {
-          path: "users",
-          component: AdminUsers
-        },
         {
           path: "/users/add",
           component: AddUser

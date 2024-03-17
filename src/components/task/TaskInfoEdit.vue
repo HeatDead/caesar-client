@@ -45,7 +45,7 @@ const handleClose = () => {
     <template #header>
       <div v-if="!edit" style="display: flex">
         <el-button @click="edit=true" type="info" class="w-20" link><el-icon><Edit/></el-icon></el-button>
-        <h2 v-if="task" style="color: white; margin-left: 10px">{{ task.name }}</h2>
+        <h2 v-if="task" style="color: var(--el-text-color-primary); margin-left: 10px">{{ task.name }}</h2>
       </div>
       <div v-else><el-input v-model="task.name" style="width: 300px; font-size: 24px; font-weight: bold" size="large"></el-input></div>
     </template>

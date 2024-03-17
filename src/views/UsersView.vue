@@ -15,16 +15,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <h3>Пользователи</h3>
+  <el-breadcrumb separator="/">
+    <el-breadcrumb-item :to="{ path: '/' }">Caesar</el-breadcrumb-item>
+    <el-breadcrumb-item>Пользователи</el-breadcrumb-item>
+  </el-breadcrumb>
+  <h2>Пользователи</h2>
   <RouterLink to="/users/add">
     <el-button>Добавить</el-button>
   </RouterLink>
   <el-table :data="users" style="width: 100%">
-    <el-table-column prop="login" label="Логин" width="150"/>
+    <el-table-column prop="username" label="Логин" width="150"/>
     <el-table-column prop="surname" label="Фамилия" width="180"/>
     <el-table-column prop="name" label="Имя" width="180"/>
     <el-table-column prop="patronymic" label="Отчество" width="180"/>
-    <el-table-column prop="roles" label="Роли" width="180"/>
+    <el-table-column prop="role.name" label="Роль" width="180"/>
     <el-table-column fixed="right" label="Операции" width="350">
       <template #default="scope">
         <el-button

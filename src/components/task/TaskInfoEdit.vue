@@ -2,12 +2,12 @@
 import {Edit, SemiSelect} from "@element-plus/icons-vue";
 import {ref, defineExpose} from "vue";
 import ProjectStatus from "@/components/project/ProjectStatus.vue";
+import taskApi from "@/api/taskApi";
 
 const drawer = ref(false)
 const edit = ref(false)
 
-const startDate = ref('')
-const deadlineDate = ref('')
+const editTask = ref()
 
 const disabledDate = (time) => {
   return time.getTime() < (Date.now() - 3600 * 1000 * 24)
@@ -17,16 +17,33 @@ const open = () => {
   drawer.value = true
 }
 
+const updateTask = async () => {
+  props.task = await taskApi.getTask(props.task.id);
+}
+
 defineExpose({
   open
 })
+
+const startEdit = () => {
+  edit.value = true
+  editTask.value = {...props.task}
+}
 
 const cancelEdit = () => {
   edit.value = false;
 }
 
+const saveEdit = async () => {
+  await taskApi.editTask(editTask.value).then(() => {
+    props.reload()
+    edit.value = false;
+  })
+}
+
 let props = defineProps({
-  task: Object
+  task: Object,
+  reload: Function
 })
 
 const handleClose = () => {
@@ -44,15 +61,15 @@ const handleClose = () => {
   >
     <template #header>
       <div v-if="!edit" style="display: flex">
-        <el-button @click="edit=true" type="info" class="w-20" link><el-icon><Edit/></el-icon></el-button>
+        <el-button @click="startEdit" type="info" class="w-20" link><el-icon><Edit/></el-icon></el-button>
         <h2 v-if="task" style="color: var(--el-text-color-primary); margin-left: 10px">{{ task.name }}</h2>
       </div>
-      <div v-else><el-input v-model="task.name" style="width: 300px; font-size: 24px; font-weight: bold" size="large"></el-input></div>
+      <div v-else><el-input maxlength="25" show-word-limit v-model="editTask.name" style="width: 300px; font-size: 24px; font-weight: bold" size="large"></el-input></div>
     </template>
     <div v-if="task" style="height: 90%">
       <div>
-        <el-input v-if="edit" type="textarea" v-model="task.description"></el-input>
-        <p v-else>{{task.description}}</p>
+        <el-input style="padding-bottom: 25px" placeholder="Описание" maxlength="2048" show-word-limit v-if="edit" type="textarea" v-model="editTask.description" :autosize="{ minRows: 5 }" resize="none"></el-input>
+        <el-input v-else type="textarea" placeholder="Описание" v-model="task.description" :autosize="{ minRows: 5 }" resize="none" readonly></el-input>
       </div>
       <el-divider/>
       <div class="task-container">
@@ -69,11 +86,23 @@ const handleClose = () => {
           </div>
           <div class="box-item">
             <span>Дата начала</span>
-            <span v-if="!edit" class="item-value"><el-icon><SemiSelect/></el-icon></span>
+            <span v-if="!edit" class="item-value">
+              <el-icon v-if="!task.startDate"><SemiSelect/></el-icon>
+              <span v-else>                          <el-date-picker
+                  readonly
+                  v-model="task.startDate"
+                  type="date"
+                  format="DD.MM.YYYY"
+                  placeholder="Выберете дату начала"
+                  :disabled-date="disabledDate"
+                  size="default"
+              /></span>
+            </span>
             <span v-else class="item-value">
                           <el-date-picker
-                              v-model="startDate"
+                              v-model="editTask.startDate"
                               type="date"
+                              format="DD.MM.YYYY"
                               placeholder="Выберете дату начала"
                               :disabled-date="disabledDate"
                               size="default"
@@ -82,12 +111,24 @@ const handleClose = () => {
           </div>
           <div class="box-item">
             <span>Дедлайн</span>
-            <span v-if="!edit" class="item-value"><el-icon><SemiSelect/></el-icon></span>
+            <span v-if="!edit" class="item-value">
+              <el-icon v-if="!task.deadline"><SemiSelect/></el-icon>
+              <span v-else>                          <el-date-picker
+                  readonly
+                  v-model="task.deadline"
+                  type="date"
+                  placeholder="Выберете дату дедлайна"
+                  format="DD.MM.YYYY"
+                  :disabled-date="disabledDate"
+                  size="default"
+              /></span>
+            </span>
             <span v-else class="item-value">
                           <el-date-picker
-                              v-model="deadlineDate"
+                              v-model="editTask.deadline"
                               type="date"
                               placeholder="Выберете дату дедлайна"
+                              format="DD.MM.YYYY"
                               :disabled-date="disabledDate"
                               size="default"
                           />
@@ -95,11 +136,17 @@ const handleClose = () => {
           </div>
           <div class="box-item">
             <span>Автор</span>
-            <span class="item-value"><el-icon><SemiSelect/></el-icon></span>
+            <span class="item-value">
+              <el-icon v-if="!task.author"><SemiSelect/></el-icon>
+              <span v-else>{{task.author.username}}</span>
+            </span>
           </div>
           <div class="box-item">
             <span>Исполнитель</span>
-            <span class="item-value"><el-icon><SemiSelect/></el-icon></span>
+            <span class="item-value">
+                            <el-icon v-if="!task.assignee"><SemiSelect/></el-icon>
+                  <span v-else>{{task.assignee.username}}</span>
+            </span>
           </div>
           <div class="box-item">
             <span>Проект</span>
@@ -111,7 +158,7 @@ const handleClose = () => {
           </div>
         </div>
         <div v-if="edit" class="task-buttons">
-          <el-button>Изменить</el-button>
+          <el-button @click="saveEdit">Изменить</el-button>
           <el-button @click="cancelEdit" type="danger">Отмена</el-button>
         </div>
       </div>
@@ -129,6 +176,10 @@ const handleClose = () => {
   display: flex;
   flex-direction: column;
   height: 95%;
+}
+
+.description {
+  max-width: 100px;
 }
 
 .box-item {

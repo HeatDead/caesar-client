@@ -1,7 +1,9 @@
 import axios from "axios";
 import {useAuthStore} from "@/stores/user";
+import {ElNotification} from "element-plus";
+import {throwError} from "@/config/notifications";
 
-const instance = axios.create({
+export const instance = axios.create({
     baseURL: 'http://localhost:8080/',
     timeout: 1000
 });
@@ -14,11 +16,10 @@ instance.interceptors.request.use(async (config) => {
 });
 
 instance.interceptors.response.use(null, (error) => {
-    if (error.response.status === 403) {
+    console.log(error)
+    if (error.response.status === 401) {
         useAuthStore().logout()
+    } else if(error.response.status === 403) {
+        throwError('Вам не доступно данное действие. Если это не так, обратитесь к администратору.')
     }
 })
-
-export {
-    instance
-}

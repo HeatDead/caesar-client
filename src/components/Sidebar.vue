@@ -112,11 +112,11 @@ const logout = () => {
                       class="demo-rich-content__name"
                       style="margin: 0; font-weight: 500"
                   >
-                    Имя Фамилия
+                    {{ useAuthStore().userDetails.name }} {{ useAuthStore().userDetails.surname }}
                   </p>
                   <p class="demo-rich-content__mention"
                      style="margin: 0; font-size: 14px; color: var(--el-color-info)">
-                    @username
+                    @{{ useAuthStore().userDetails.username }}
                   </p>
                 </div>
               </div>

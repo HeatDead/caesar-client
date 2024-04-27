@@ -1,4 +1,5 @@
 import {instance} from "@/config/axiosConfig";
+import {throwSuccess} from "@/config/notifications";
 
 const getDesks = async () => {
     let res = await instance.get("/desk/list")
@@ -19,6 +20,9 @@ const addDesk = async (deskName, projectId) => {
     await instance.post("/desk", {
         name: deskName,
         projectId: projectId
+    }).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Доска создана')
     })
 }
 
@@ -26,6 +30,9 @@ const addPanel = async (panelName, deskId) => {
     await instance.post("/desk/panel", {
         name: panelName,
         deskId: deskId
+    }).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Панель создана')
     })
 }
 

@@ -2,7 +2,7 @@
 import {onMounted} from "vue";
 import axios from "axios";
 import {ref} from "vue";
-import userApi from "@/api/userApi";
+import * as userApi from "@/api/userApi";
 
 let users = ref([])
 const getUsers = async () => {

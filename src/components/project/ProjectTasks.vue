@@ -5,6 +5,7 @@ import router from "@/router";
 import taskApi from "@/api/taskApi";
 import TaskStatus from "@/components/task/TaskStatus.vue";
 import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
+import {throwSuccess} from "@/config/notifications";
 
 let props = defineProps({
   projectId: String
@@ -36,6 +37,11 @@ const filterTableData = computed(() =>
 const getTask = async (id) => {
   task.value = await taskApi.getTask(id);
   loading.value = false;
+}
+
+const reload = async () => {
+  await getTasks()
+  task.value = await taskApi.getTask(task.value.id);
 }
 
 const getTasks = async () => {
@@ -70,9 +76,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск по названию задачи" />
+  <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
   <el-table v-loading="loading" :data="filterTableData" style="width: 100%">
-    <el-table-column prop="name" label="Задача" width="284">
+    <el-table-column sortable prop="name" label="Задача" width="284">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="loadTask(scope.row.id)"> <!-- Клик на проект -->
           <el-icon><Tickets /></el-icon>
@@ -80,15 +86,35 @@ onMounted(() => {
         </div>
       </template>
     </el-table-column>
-    <el-table-column prop="" label="Группа" width="150"/>
+    <el-table-column sortable prop="" label="Группа" width="150"/>
     <el-table-column prop="" label="Статус" width="134">
       <template #default="scope">
         <TaskStatus/>
       </template>
     </el-table-column>
-    <el-table-column prop="" label="Исполнитель" width="180"/>
-    <el-table-column prop="" label="Дата начала" width="180"/>
-    <el-table-column prop="" label="Дата завершения" width="176"/>
+    <el-table-column prop="assignee" label="Исполнитель" width="180"/>
+    <el-table-column sortable prop="startDate" label="Дата начала" width="180">
+      <template #default="scope">
+        <el-date-picker
+            style="width: 120px"
+            format="DD.MM.YYYY"
+            readonly
+            v-model="scope.row.startDate"
+            type="date"
+        />
+      </template>
+    </el-table-column>
+    <el-table-column sortable prop="deadline" label="Дата завершения" width="176">
+      <template #default="scope">
+        <el-date-picker
+            style="width: 120px"
+            format="DD.MM.YYYY"
+            readonly
+            v-model="scope.row.deadline"
+            type="date"
+        />
+      </template>
+    </el-table-column>
     <el-table-column fixed="right" width="60">
       <template #header>
         <el-popover :visible="visible" placement="left-start" :width="300"> <!-- Создание проекта -->
@@ -121,7 +147,7 @@ onMounted(() => {
       </template>
     </el-table-column>
   </el-table>
-  <TaskInfoEdit :task="task" ref="childComponentRef"/>
+  <TaskInfoEdit :task="task" :reload="reload" ref="childComponentRef"/>
 </template>
 
 <style scoped>

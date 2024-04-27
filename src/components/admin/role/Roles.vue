@@ -1,104 +1,92 @@
 <script setup>
-import {onMounted, ref, computed} from "vue";
 import {
   Close,
   DataBoard,
   MoreFilled,
   Plus,
   Search,
+    Star
 } from "@element-plus/icons-vue";
-import router from "@/router";
-import taskApi from "@/api/taskApi";
-import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
+import {computed, onMounted, ref} from "vue";
+import * as userApi from "@/api/userApi";
+import RoleInfoEdit from "@/components/admin/role/RoleInfoEdit.vue";
 import deskApi from "@/api/deskApi";
 
-let props = defineProps({
-  projectId: String
-})
-
-let desks = ref([])
-let loading = ref(true)
-
+let roles = ref()
+const role = ref()
+const childComponentRef = ref()
 const search = ref('')
 
+const newRoleName = ref('')
 const visible = ref(false)
 
-let desk = ref(null);
-const childComponentRef = ref()
-
-const newDeskName = ref('')
-const loadDesk = (id) => {
-  childComponentRef.value.open()
-  getDesk(id)
+const getRoles = async () => {
+  await userApi.getRoles().then((data) => {
+    roles.value = data;
+  })
 }
 
-const filterTableData = computed(() =>
-    desks.value.filter(
+const loadRole = async (id) => {
+  role.value = await userApi.getRole(id)
+  childComponentRef.value.open()
+}
+
+const reload = async () => {
+  await getRoles()
+  role.value = await userApi.getRole(role.value.id)
+}
+
+const filterTableData = computed(() => {
+  if(roles.value)
+    return  roles.value.filter(
         (data) =>
             !search.value ||
             data.name.toLowerCase().includes(search.value.toLowerCase())
     )
+  return null}
 )
 
-const getDesk = async (id) => {
-  desk.value = await taskApi.getTask(id);
-  loading.value = false;
-}
-
-const getDesks = async () => {
-  if (props.projectId) {
-    await deskApi.getDesksByProject(props.projectId).then((value) => {
-      desks.value = value
-      loading.value = false
-    })
-  } else {
-    await deskApi.getDesks().then((value) => {
-      desks.value = value
-      loading.value = false
-    })
-  }
-}
-
-const addDesk = async () => {
-  await deskApi.addDesk(newDeskName.value, props.projectId).then(() => {
+const addRole = async () => {
+  await userApi.addRole(newRoleName.value).then(() => {
     visible.value = false
-    getDesks()
-    newDeskName.value = ''
+    getRoles()
+    newRoleName.value = ''
   })
 }
 
-const toDesk = (id) => {
-  router.push(`/projects/${props.projectId}/desk/${id}`)
-}
-
 onMounted(() => {
-  getDesks()
+  getRoles()
 })
 </script>
 
 <template>
+  <el-breadcrumb separator="/">
+    <el-breadcrumb-item :to="{ path: '/' }">Caesar</el-breadcrumb-item>
+    <el-breadcrumb-item>Роли</el-breadcrumb-item>
+  </el-breadcrumb>
+  <h2>Роли</h2>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table v-loading="loading" :data="filterTableData" style="width: 100%">
-    <el-table-column sortable prop="name" label="Название" width="600">
+  <el-table :data="filterTableData" style="width: 100%">
+    <el-table-column prop="name" label="Название" width="600">
       <template #default="scope">
-        <div style="display: flex; align-items: center" class="clickable" @click="toDesk(scope.row.id)"> <!-- Клик на проект -->
-          <el-icon><DataBoard /></el-icon>
+        <div style="display: flex; align-items: center" class="clickable" @click="loadRole(scope.row.id)"> <!-- Клик на проект -->
+          <el-icon><Star /></el-icon>
           <span style="margin-left: 10px"> {{scope.row.name}}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column sortable prop="id" label="ID" width="180"/>
-    <el-table-column prop="" label="Владелец" width="324"/>
+    <el-table-column prop="id" label="ID" width="180"/>
+    <el-table-column prop="permissions" label="Разрешения" width="324"/>
     <el-table-column fixed="right" width="60">
       <template #header>
         <el-popover :visible="visible" placement="left-start" :width="300"> <!-- Создание проекта -->
           <header class="crp-header">
-            <h3 style="margin: 0">Создать доску</h3>
+            <h3 style="margin: 0">Создать роль</h3>
             <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
           </header>
-          <el-input v-model="newDeskName" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
+          <el-input v-model="newRoleName" style="margin-bottom: 10px" type="text" placeholder="Название роли"></el-input>
           <div style="text-align: right; margin: 0">
-            <el-button :disabled="!newDeskName" type="primary" @click="addDesk"
+            <el-button :disabled="!newRoleName" type="primary" @click="addRole"
             >Создать</el-button>
           </div>
           <template #reference>
@@ -112,7 +100,7 @@ onMounted(() => {
             <el-button style="width: 35px" bg text><el-icon><MoreFilled/></el-icon></el-button>
           </template>
           <div class="settings">
-            <el-button @click="toDesk(scope.row.id)" class="setting_button">Подробнее</el-button>
+            <el-button @click="loadRole(scope.row.id)" class="setting_button">Подробнее</el-button>
             <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
             <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
           </div>
@@ -121,7 +109,7 @@ onMounted(() => {
       </template>
     </el-table-column>
   </el-table>
-  <TaskInfoEdit :desk="desk" ref="childComponentRef"/>
+  <RoleInfoEdit :role="role" :reload="reload" ref="childComponentRef"/>
 </template>
 
 <style scoped>

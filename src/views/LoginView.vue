@@ -13,6 +13,7 @@ let ruleForm = ref({
 const login = () => {
   authApi.login(ruleForm.value.login, ruleForm.value.password).then((res) => {
     useAuthStore().setToken(res.token)
+    useAuthStore().loadDetails()
   })
 }
 
@@ -52,6 +53,7 @@ const rules = ref({
             v-model="ruleForm.password"
             placeholder="Введите пароль"
             type="password"
+            show-password
         ></el-input>
       </el-form-item>
       <div>

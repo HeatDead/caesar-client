@@ -7,6 +7,7 @@ import LoginView from "@/views/LoginView.vue";
 
 onBeforeMount(() => {
   useAuthStore().loadToken()
+  useAuthStore().loadDetails()
 })
 </script>
 

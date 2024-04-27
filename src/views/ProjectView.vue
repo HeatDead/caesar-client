@@ -2,7 +2,7 @@
 import {onMounted, ref} from "vue";
 import {useRoute} from "vue-router";
 import projectApi from "@/api/projectApi";
-import {Collection, Edit, Plus, SemiSelect} from "@element-plus/icons-vue";
+import {Collection, DataAnalysis, Edit, Plus, SemiSelect, User} from "@element-plus/icons-vue";
 import router from "@/router";
 import ProjectStatus from "@/components/project/ProjectStatus.vue";
 
@@ -51,8 +51,12 @@ onMounted(() => {
       <el-tabs v-model="activeName" class="demo-tabs" @tab-click="handleClick">
         <el-tab-pane label="О проекте" name="about">
           <div class="about">
-            <p class="description">{{project.description}}</p>
-            <el-button class="button" style="width: 32px; margin-right: 10px" text bg><el-icon><Edit/></el-icon></el-button>
+            <el-input style="margin-right: 10px" placeholder="Описание" type="textarea" v-model="project.description" :autosize="{ minRows: 11 }" resize="none" readonly></el-input>
+            <div class="options">
+              <el-button class="button" style="width: 32px" text bg><el-icon><Edit/></el-icon></el-button>
+              <el-button class="button" style="width: 32px; margin-left: 0; margin-top: 8px" text bg><el-icon><user/></el-icon></el-button>
+              <el-button class="button" style="width: 32px; margin-left: 0; margin-top: 8px" text bg><el-icon><DataAnalysis/></el-icon></el-button>
+            </div>
             <el-card class="box-card">
               <div class="box-item">
                 <span>Статус</span>
@@ -68,7 +72,10 @@ onMounted(() => {
               </div>
               <div class="box-item">
                 <span>Автор</span>
-                <span class="item-value"><el-icon><SemiSelect/></el-icon></span>
+                <span class="item-value">
+                  <el-icon v-if="!project.author.username"><SemiSelect/></el-icon>
+                  <span v-else>{{project.author.username}}</span>
+                </span>
               </div>
               <div class="box-item">
                 <span>Ответственный</span>
@@ -98,6 +105,12 @@ onMounted(() => {
   display: flex;
   margin-bottom: 25px;
   justify-content: space-between;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  margin-right: 10px
 }
 
 .item-value {

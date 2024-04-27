@@ -51,7 +51,7 @@ onMounted(() => {
   <h2>Проекты</h2>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
   <el-table :data="filterTableData" style="width: 100%" >
-    <el-table-column prop="name" label="Название" width="310">
+    <el-table-column sortable prop="name" label="Название" width="310">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="router.push('/projects/' + scope.row.id)"> <!-- Клик на проект -->
           <el-icon><Collection /></el-icon>
@@ -64,7 +64,7 @@ onMounted(() => {
         <ProjectStatus/>
       </template>
     </el-table-column>
-    <el-table-column prop="" label="Автор" width="180"/>
+    <el-table-column prop="author.username" label="Автор" width="180"/>
     <el-table-column prop="" label="Ответственный" width="180"/>
     <el-table-column prop="" label="Старт" width="150"/>
     <el-table-column prop="" label="Дедлайн" width="150"/>

@@ -36,7 +36,8 @@ const editTask = async (task) => {
         name: task.name,
         description: task.description,
         startDate: task.startDate,
-        deadline: task.deadline
+        deadline: task.deadline,
+        status: task.status
     }).then((response) => {
         if(response.status === 200)
             throwSuccess('Изменения внесены')
@@ -47,7 +48,8 @@ const addTaskToPanel = async (name, projectId, panelId) => {
     await instance.post("/task/panel", {
         name: name,
         projectId: projectId,
-        panelId: panelId
+        panelId: panelId,
+        author: useAuthStore().userDetails.username
     })
 }
 

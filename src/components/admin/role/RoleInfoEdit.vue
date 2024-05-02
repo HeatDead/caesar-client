@@ -8,15 +8,9 @@ import * as userApi from "@/api/userApi";
 const drawer = ref(false)
 const edit = ref(false)
 
-const editTask = ref()
 const editRole = ref()
 
 const permissions = ref({})
-const test = ref([])
-
-const form = reactive({
-  type: []
-})
 
 const open = () => {
   drawer.value = true
@@ -27,10 +21,6 @@ const loadPermissions = async () => {
   userApi.getPermissions().then((data) => {
     permissions.value = data;
   })
-}
-
-const updateTask = async () => {
-  props.task = await taskApi.getTask(props.task.id);
 }
 
 defineExpose({
@@ -54,7 +44,6 @@ const saveEdit = async () => {
 }
 
 let props = defineProps({
-  task: Object,
   role: Object,
   reload: Function
 })

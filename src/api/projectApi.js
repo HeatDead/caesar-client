@@ -14,6 +14,18 @@ const getProject = async (id) => {
     return res.data
 }
 
+const getEmployees = async (id) => {
+    let res = await instance.get("/project/employees?id=" + id)
+    return res.data
+}
+
+const addEmployees = async (id, data) => {
+    await instance.post("/project/employees?id=" + id, data).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Изменения внесены')
+    })
+}
+
 const addProject = async (projectName) => {
     await instance.post("/project", {
         name: projectName,
@@ -24,6 +36,20 @@ const addProject = async (projectName) => {
     })
 }
 
+const editProject = async (project) => {
+    await instance.post("/project/edit", {
+        id: project.id,
+        name: project.name,
+        description: project.description,
+        responsible: project.responsible,
+        startDate: project.startDate,
+        deadline: project.deadline
+    }).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Изменения внесены')
+    })
+}
+
 export default {
-    getProjects, getProject, addProject
+    getProjects, getProject, addProject, editProject, getEmployees, addEmployees
 }

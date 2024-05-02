@@ -7,6 +7,34 @@ export const getUsers = async () => {
     return res.data
 }
 
+export const getUserByUsername = async (username) => {
+    let res = await instance.get("/user/get?username=" + username)
+    return res.data
+}
+
+export const editUser = async (user) => {
+    await instance.post("/user/edit", {
+        username: user.username,
+        name: user.name,
+        surname: user.surname,
+        patronymic: user.patronymic,
+        role: user.role.id
+    }).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Изменения внесены')
+    })
+}
+
+export const editPassword = async (user) => {
+    await instance.post("/user/password", {
+        username: user.id,
+        password: user.password
+    }).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Изменения внесены')
+    })
+}
+
 export const getMyDetails = async () => {
     let res = await instance.get("/user/details")
     return res.data

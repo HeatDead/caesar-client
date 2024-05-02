@@ -6,6 +6,7 @@ import taskApi from "@/api/taskApi";
 import TaskStatus from "@/components/task/TaskStatus.vue";
 import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
 import {throwSuccess} from "@/config/notifications";
+import {Bug} from '@vicons/tabler'
 
 let props = defineProps({
   projectId: String
@@ -66,9 +67,17 @@ const addTask = async () => {
   })
 }
 
+const filterHandler = (
+    value,
+    row
+) => {
+  return row.status === value
+}
+
 const taskInfo = (id) => {
   router.push(`/task/${id}`)
 }
+
 
 onMounted(() => {
   getTasks()
@@ -77,7 +86,12 @@ onMounted(() => {
 
 <template>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table v-loading="loading" :data="filterTableData" style="width: 100%">
+  <el-table height="540" v-loading="loading" :data="filterTableData" style="width: 100%">
+    <template #empty>
+      <div class="flex items-center justify-center h-100%">
+        <el-empty />
+      </div>
+    </template>
     <el-table-column sortable prop="name" label="Задача" width="284">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="loadTask(scope.row.id)"> <!-- Клик на проект -->
@@ -87,9 +101,16 @@ onMounted(() => {
       </template>
     </el-table-column>
     <el-table-column sortable prop="" label="Группа" width="150"/>
-    <el-table-column prop="" label="Статус" width="134">
+    <el-table-column prop="status" label="Статус" width="134"
+                     :filters="[
+                         { text: 'Открыт', value: 'OPENED' },
+                         { text: 'В работе', value: 'IN_WORK' },
+                         { text: 'Завершен', value: 'COMPLETED' },
+                         { text: 'Нужна информация', value: 'NEED_INFO' },
+                         { text: 'Отменен', value: 'CANCELED' },]"
+                     :filter-method="filterHandler">
       <template #default="scope">
-        <TaskStatus/>
+        <TaskStatus :status="scope.row.status"/>
       </template>
     </el-table-column>
     <el-table-column prop="assignee" label="Исполнитель" width="180"/>

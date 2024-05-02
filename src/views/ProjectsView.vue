@@ -5,6 +5,7 @@ import projectF from "../api/projectApi"
 import router from "@/router";
 import {Close, Collection, MoreFilled, Plus, Search} from "@element-plus/icons-vue";
 import ProjectStatus from "@/components/project/ProjectStatus.vue";
+import UserPanel from "@/components/UserPanel.vue";
 
 let projects = ref([])
 const search = ref('')
@@ -50,7 +51,12 @@ onMounted(() => {
   </el-breadcrumb>
   <h2>Проекты</h2>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table :data="filterTableData" style="width: 100%" >
+  <el-table height="600" :data="filterTableData" style="width: 100%" >
+    <template #empty>
+      <div class="flex items-center justify-center h-100%">
+        <el-empty />
+      </div>
+    </template>
     <el-table-column sortable prop="name" label="Название" width="310">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="router.push('/projects/' + scope.row.id)"> <!-- Клик на проект -->
@@ -64,10 +70,38 @@ onMounted(() => {
         <ProjectStatus/>
       </template>
     </el-table-column>
-    <el-table-column prop="author.username" label="Автор" width="180"/>
-    <el-table-column prop="" label="Ответственный" width="180"/>
-    <el-table-column prop="" label="Старт" width="150"/>
-    <el-table-column prop="" label="Дедлайн" width="150"/>
+    <el-table-column prop="author.username" label="Автор" width="180">
+      <template #default="scope">
+        <UserPanel :name="scope.row.author ? `${scope.row.author.surname} ${scope.row.author.name} ${scope.row.author.patronymic}` : ''"/>
+      </template>
+    </el-table-column>
+    <el-table-column prop="" label="Ответственный" width="180">
+      <template #default="scope">
+        <UserPanel :name="scope.row.responsible ? `${scope.row.responsible.surname} ${scope.row.responsible.name} ${scope.row.responsible.patronymic}` : ''"/>
+      </template>
+    </el-table-column>
+    <el-table-column sortable prop="startDate" label="Дата начала" width="150">
+      <template #default="scope">
+        <el-date-picker
+            style="width: 120px"
+            format="DD.MM.YYYY"
+            readonly
+            v-model="scope.row.startDate"
+            type="date"
+        />
+      </template>
+    </el-table-column>
+    <el-table-column sortable prop="deadline" label="Дедлайн" width="150">
+      <template #default="scope">
+        <el-date-picker
+            style="width: 120px"
+            format="DD.MM.YYYY"
+            readonly
+            v-model="scope.row.deadline"
+            type="date"
+        />
+      </template>
+    </el-table-column>
     <el-table-column fixed="right" width="60">
       <template #header>
         <el-popover :visible="visible" placement="left-start" :width="300"> <!-- Создание проекта -->

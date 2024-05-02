@@ -78,7 +78,12 @@ onMounted(() => {
 
 <template>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table v-loading="loading" :data="filterTableData" style="width: 100%">
+  <el-table height="540" v-loading="loading" :data="filterTableData" style="width: 100%">
+    <template #empty>
+      <div class="flex items-center justify-center h-100%">
+        <el-empty />
+      </div>
+    </template>
     <el-table-column sortable prop="name" label="Название" width="600">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="toDesk(scope.row.id)"> <!-- Клик на проект -->

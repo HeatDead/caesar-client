@@ -7,10 +7,23 @@ import {Close, Collection, MoreFilled, Plus, Search, User} from "@element-plus/i
 import router from "@/router";
 import ProjectStatus from "@/components/project/ProjectStatus.vue";
 import * as authApi from "@/api/authApi";
+import RoleInfoEdit from "@/components/admin/role/RoleInfoEdit.vue";
+import UserInfoEdit from "@/components/admin/user/UserInfoEdit.vue";
+
+const childComponentRef = ref()
 
 let users = ref([])
+let user = ref([])
 const search = ref('')
 const visible = ref(false)
+const newUserRef = ref({
+  lgn:'',
+  psw:'',
+  name:'',
+  surname:'',
+  patronymic:'',
+  role:''
+})
 const newUser = ref({
   lgn:'',
   psw:'',
@@ -26,7 +39,7 @@ const filterTableData = computed(() =>
     users.value.filter(
         (data) =>
             !search.value ||
-            (`${data.name} ${data.surname} ${data.patronymic}`).toLowerCase().includes(search.value.toLowerCase())
+            (`${data.surname} ${data.name} ${data.patronymic}`).toLowerCase().includes(search.value.toLowerCase())
     )
 )
 
@@ -41,7 +54,24 @@ const getRoles = async () => {
 const addUser = async () => {
   await authApi.register(newUser.value).then(() => {
     getUsers()
+    closeAdd()
   })
+}
+
+const closeAdd = () => {
+  visible.value = false
+  newUser.value = {...newUserRef}
+}
+
+const loadUser = async (username) => {
+  user.value = await userApi.getUserByUsername(username)
+  childComponentRef.value.open()
+}
+
+const reload = async () => {
+  await getRoles()
+  await getUsers()
+  user.value = await userApi.getUserByUsername(user.value.username)
 }
 
 onMounted(() => {
@@ -60,14 +90,14 @@ onMounted(() => {
   <el-table :data="filterTableData" style="width: 100%" >
     <el-table-column sortable prop="username" label="Логин" width="220">
       <template #default="scope">
-        <div style="display: flex; align-items: center" class="clickable" @click="router.push('/projects/' + scope.row.id)"> <!-- Клик на проект -->
-          <el-icon><user /></el-icon>
+        <div style="display: flex; align-items: center" class="clickable" @click="loadUser(scope.row.username)"> <!-- Клик на проект -->
+          <el-icon><User /></el-icon>
           <span style="margin-left: 10px"> {{scope.row.username}}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column sortable prop="name" label="Имя" width="230"/>
     <el-table-column sortable prop="surname" label="Фамилия" width="230"/>
+    <el-table-column sortable prop="name" label="Имя" width="230"/>
     <el-table-column sortable prop="patronymic" label="Отчество" width="230"/>
     <el-table-column sortable prop="role.name" label="Роль" width="194"/>
     <el-table-column fixed="right" width="60">
@@ -75,7 +105,7 @@ onMounted(() => {
         <el-popover :visible="visible" placement="left-start" :width="300"> <!-- Создание проекта -->
           <header class="crp-header">
             <h3 style="margin: 0">Добавить пользователя</h3>
-            <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
+            <el-button style="width: 32px" text @click="closeAdd"><el-icon><Close/></el-icon></el-button>
           </header>
           <el-input autocomplete="username" clearable v-model="newUser.lgn" style="margin-bottom: 10px" type="text" placeholder="Логин"></el-input>
           <el-input show-password clearable v-model="newUser.psw" style="margin-bottom: 10px" type="password" placeholder="Пароль"></el-input>
@@ -117,6 +147,7 @@ onMounted(() => {
       </template>
     </el-table-column>
   </el-table>
+  <UserInfoEdit :user="user" :roles="roles" :reload="reload" ref="childComponentRef"/>
 </template>
 
 <style scoped>

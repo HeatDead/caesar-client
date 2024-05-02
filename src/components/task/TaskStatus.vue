@@ -6,29 +6,31 @@ import {
   Warning
 } from "@element-plus/icons-vue";
 
-const status = ref('Открыт')
+let props = defineProps({
+  status: String
+})
 </script>
 
 <template>
-  <div v-if="status === 'Открыт'" class="status-base status-new">
+  <div v-if="status === 'OPENED'" class="status-base status-new">
     <el-icon><CirclePlus/></el-icon>
-    <span style="margin-left: 5px">{{status}}</span>
+    <span style="margin-left: 5px">Открыт</span>
   </div>
-  <div v-if="status === 'В работе'" class="status-base status-work">
+  <div v-if="status === 'IN_WORK'" class="status-base status-work">
     <el-icon><Loading/></el-icon>
-    <span style="margin-left: 5px">{{status}}</span>
+    <span style="margin-left: 5px">В работе</span>
   </div>
-  <div v-if="status === 'Завершен'" class="status-base status-completed">
+  <div v-if="status === 'COMPLETED'" class="status-base status-completed">
     <el-icon><CircleCheck/></el-icon>
-    <span style="margin-left: 5px">{{status}}</span>
+    <span style="margin-left: 5px">Завершен</span>
   </div>
-  <div v-if="status === 'Н. Инфо.'" class="status-base status-info">
+  <div v-if="status === 'NEED_INFO'" class="status-base status-info">
     <el-icon><Warning/></el-icon>
-    <span style="margin-left: 5px">{{status}}</span>
+    <span style="margin-left: 5px">Н. Инфо.</span>
   </div>
-  <div v-if="status === 'Отменен'" class="status-base status-canceled">
+  <div v-if="status === 'CANCELED'" class="status-base status-canceled">
     <el-icon><CircleClose/></el-icon>
-    <span style="margin-left: 5px">{{status}}</span>
+    <span style="margin-left: 5px">Отменен</span>
   </div>
 </template>
 

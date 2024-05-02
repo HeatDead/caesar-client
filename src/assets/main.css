@@ -4,6 +4,14 @@
   font-family: 'Roboto', sans-serif;
 }
 
+html {
+  height: 100vh;
+}
+
+body{
+  height: 98%;
+}
+
 *{
   font-family: 'Roboto', sans-serif;
 }

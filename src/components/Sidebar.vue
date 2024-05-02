@@ -67,22 +67,16 @@ const logout = () => {
               <span>Пользователи</span>
             </el-menu-item>
           </RouterLink>
-          <RouterLink to="/admin/roles">
+          <RouterLink to="/admin/groups">
             <el-menu-item index="6">
               <el-icon><MessageBox /></el-icon>
               <span>Группы</span>
             </el-menu-item>
           </RouterLink>
           <RouterLink to="/admin/roles">
-            <el-menu-item index="6">
+            <el-menu-item index="7">
               <el-icon><Star /></el-icon>
               <span>Роли</span>
-            </el-menu-item>
-          </RouterLink>
-          <RouterLink to="/admin/projects">
-            <el-menu-item index="7">
-              <el-icon><Collection /></el-icon>
-              <span>Проекты</span>
             </el-menu-item>
           </RouterLink>
         </el-sub-menu>

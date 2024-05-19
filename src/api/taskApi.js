@@ -14,6 +14,11 @@ const getTasksByProject = async (id) => {
     return res.data
 }
 
+const getTasksByProjectAndStatus = async (id, status) => {
+    const res = await instance.get(`/task/status?id=${id}&status=${status}`)
+    return res.data
+}
+
 const getTask = async (id) => {
     let res = await instance.get("/task/get?id=" + id)
     return res.data
@@ -37,7 +42,12 @@ const editTask = async (task) => {
         description: task.description,
         startDate: task.startDate,
         deadline: task.deadline,
-        status: task.status
+        assignee: task.assignee,
+        status: task.status,
+        difficulty: task.difficulty,
+        group: task.group,
+        type: task.type,
+        priority: task.priority,
     }).then((response) => {
         if(response.status === 200)
             throwSuccess('Изменения внесены')
@@ -53,6 +63,22 @@ const addTaskToPanel = async (name, projectId, panelId) => {
     })
 }
 
+const deleteTask = async (id) => {
+    await instance.delete("/task/delete?id=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Задача удалена')
+    })
+}
+
+const  distribute = async (distribution) => {
+    let res = await instance.post("/task/distribute", {
+        projectId: distribution.projectId,
+        groupId: distribution.groupId,
+        difficulty: distribution.difficulty
+    })
+    return res.data
+}
+
 export default {
-    getTasks, addTask, addTaskToPanel, getTask, getTasksByProject, editTask
+    getTasks, addTask, addTaskToPanel, getTask, getTasksByProject, editTask, distribute, getTasksByProjectAndStatus, deleteTask
 }

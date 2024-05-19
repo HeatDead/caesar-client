@@ -12,9 +12,14 @@ const editRole = ref()
 
 const permissions = ref({})
 
-const open = () => {
+const open = async () => {
   drawer.value = true
-  loadPermissions()
+  await loadPermissions()
+}
+
+const openEdit = async () => {
+  await open()
+  startEdit()
 }
 
 const loadPermissions = async () => {
@@ -24,7 +29,8 @@ const loadPermissions = async () => {
 }
 
 defineExpose({
-  open
+  open,
+  openEdit
 })
 
 const startEdit = () => {
@@ -75,7 +81,7 @@ const handleClose = () => {
                   style="width: 300px; font-size: 24px; font-weight: bold" size="large"></el-input>
       </div>
     </template>
-    <div v-if="role" style="height: 90%">
+    <div v-if="role" class="container">
       <el-divider/>
       <div class="task-container">
         <div>
@@ -97,28 +103,5 @@ const handleClose = () => {
 </template>
 
 <style scoped>
-.task-buttons {
-  margin-top: auto;
-  margin-left: auto;
-}
-
-.task-container {
-  display: flex;
-  flex-direction: column;
-  height: 95%;
-}
-
-.description {
-  max-width: 100px;
-}
-
-.box-item {
-  display: flex;
-  margin-bottom: 25px;
-  justify-content: space-between;
-}
-
-.item-value {
-  width: 250px;
-}
+@import "@/assets/infoEdit.css";
 </style>

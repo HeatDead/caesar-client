@@ -42,6 +42,7 @@ const editProject = async (project) => {
         name: project.name,
         description: project.description,
         responsible: project.responsible,
+        status: project.status,
         startDate: project.startDate,
         deadline: project.deadline
     }).then((response) => {
@@ -50,6 +51,13 @@ const editProject = async (project) => {
     })
 }
 
+const deleteProject = async (id) => {
+    await instance.delete("/project/delete?id=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Проект удален')
+    })
+}
+
 export default {
-    getProjects, getProject, addProject, editProject, getEmployees, addEmployees
+    getProjects, getProject, addProject, editProject, getEmployees, addEmployees, deleteProject
 }

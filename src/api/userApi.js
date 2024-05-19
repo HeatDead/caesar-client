@@ -1,6 +1,6 @@
 import axios from "axios";
 import {instance} from "@/config/axiosConfig";
-import {throwSuccess} from "@/config/notifications";
+import {throwError, throwSuccess} from "@/config/notifications";
 
 export const getUsers = async () => {
     let res = await instance.get("/user")
@@ -12,13 +12,14 @@ export const getUserByUsername = async (username) => {
     return res.data
 }
 
-export const editUser = async (user) => {
+export const editUser = async (user, groups) => {
     await instance.post("/user/edit", {
         username: user.username,
         name: user.name,
         surname: user.surname,
         patronymic: user.patronymic,
-        role: user.role.id
+        role: user.role.id,
+        groups: groups
     }).then((response) => {
         if(response.status === 200)
             throwSuccess('Изменения внесены')
@@ -27,7 +28,7 @@ export const editUser = async (user) => {
 
 export const editPassword = async (user) => {
     await instance.post("/user/password", {
-        username: user.id,
+        username: user.username,
         password: user.password
     }).then((response) => {
         if(response.status === 200)
@@ -48,6 +49,29 @@ export const getRoles = async () => {
 export const getPermissions = async () => {
     let res = await instance.get("/role/permissions")
     return res.data
+}
+
+export const deleteRole = async (id) => {
+    await instance.delete("/role/delete?id=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Роль удалена')
+        if(response.status === 409)
+            throwError('Роль используется')
+    })
+}
+
+export const blockUser = async (id) => {
+    await instance.post("/user/block?username=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Пользователь заблокирован')
+    })
+}
+
+export const unblockUser = async (id) => {
+    await instance.post("/user/unblock?username=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Пользователь разблокирован')
+    })
 }
 
 export const getRole = async (id) => {

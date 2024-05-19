@@ -1,12 +1,23 @@
 <script setup>
 import {onMounted, ref, computed} from "vue";
-import {Close, MoreFilled, Plus, Search, Tickets} from "@element-plus/icons-vue";
+import {
+  ArrowDown, ArrowDownBold,
+  ArrowUpBold,
+  Close,
+  MoreFilled,
+  Plus,
+  Search,
+  SemiSelect,
+  Tickets,
+  WarningFilled
+} from "@element-plus/icons-vue";
 import router from "@/router";
 import taskApi from "@/api/taskApi";
 import TaskStatus from "@/components/task/TaskStatus.vue";
 import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
 import {throwSuccess} from "@/config/notifications";
 import {Bug} from '@vicons/tabler'
+import UserPanel from "@/components/UserPanel.vue";
 
 let props = defineProps({
   projectId: String
@@ -22,9 +33,14 @@ const search = ref('')
 
 let task = ref(null);
 const childComponentRef = ref()
-const loadTask = (id) => {
+const loadTask = async (id) => {
+  await getTask(id)
   childComponentRef.value.open()
-  getTask(id)
+}
+
+const editTask = async (id) => {
+  await getTask(id)
+  childComponentRef.value.openEdit()
 }
 
 const filterTableData = computed(() =>
@@ -67,6 +83,12 @@ const addTask = async () => {
   })
 }
 
+const deleteTask = (id) => {
+  taskApi.deleteTask(id).then(() => {
+    getTasks()
+  })
+}
+
 const filterHandler = (
     value,
     row
@@ -86,21 +108,35 @@ onMounted(() => {
 
 <template>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table height="540" v-loading="loading" :data="filterTableData" style="width: 100%">
+  <el-table v-loading="loading" :data="filterTableData" table-layout="auto" style="width: 100%">
     <template #empty>
       <div class="flex items-center justify-center h-100%">
         <el-empty />
       </div>
     </template>
-    <el-table-column sortable prop="name" label="Задача" width="284">
+    <el-table-column min-width="220" sortable prop="name" label="Задача">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="loadTask(scope.row.id)"> <!-- Клик на проект -->
-          <el-icon><Tickets /></el-icon>
+          <el-icon>
+            <Tickets v-if="scope.row.type === 'TASK'" />
+            <Bug v-if="scope.row.type === 'BUG'" />
+          </el-icon>
+          <el-icon style="margin-left: 8px">
+            <WarningFilled v-if="scope.row.priority === 'BLOCKER'" />
+            <ArrowUpBold v-if="scope.row.priority === 'CRITICAL'" />
+            <SemiSelect v-if="scope.row.priority === 'AVERAGE'" />
+            <ArrowDown v-if="scope.row.priority === 'LOW'" />
+            <ArrowDownBold v-if="scope.row.priority === 'MINOR'" />
+          </el-icon>
           <span style="margin-left: 10px"> {{scope.row.name}}</span>
         </div>
       </template>
     </el-table-column>
-    <el-table-column sortable prop="" label="Группа" width="150"/>
+    <el-table-column sortable prop="" label="Группа" width="170">
+      <template #default="scope">
+        <UserPanel :name="scope.row.group ? scope.row.group.name : ''"/>
+      </template>
+    </el-table-column>
     <el-table-column prop="status" label="Статус" width="134"
                      :filters="[
                          { text: 'Открыт', value: 'OPENED' },
@@ -113,8 +149,12 @@ onMounted(() => {
         <TaskStatus :status="scope.row.status"/>
       </template>
     </el-table-column>
-    <el-table-column prop="assignee" label="Исполнитель" width="180"/>
-    <el-table-column sortable prop="startDate" label="Дата начала" width="180">
+    <el-table-column prop="assignee" label="Исполнитель" width="210">
+      <template #default="scope">
+        <UserPanel :name="scope.row.assignee ? `${scope.row.assignee.surname} ${scope.row.assignee.name} ${scope.row.assignee.patronymic}` : ''"/>
+      </template>
+    </el-table-column>
+    <el-table-column sortable prop="startDate" label="Дата начала" width="150">
       <template #default="scope">
         <el-date-picker
             style="width: 120px"
@@ -125,7 +165,7 @@ onMounted(() => {
         />
       </template>
     </el-table-column>
-    <el-table-column sortable prop="deadline" label="Дата завершения" width="176">
+    <el-table-column sortable prop="deadline" label="Дедлайн" width="150">
       <template #default="scope">
         <el-date-picker
             style="width: 120px"
@@ -160,8 +200,8 @@ onMounted(() => {
         </template>
         <div class="settings">
           <el-button @click="loadTask(scope.row.id)" class="setting_button">Подробнее</el-button>
-          <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
-          <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
+          <el-button @click="editTask(scope.row.id)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
+          <el-button @click="deleteTask(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
         </div>
 
       </el-popover>

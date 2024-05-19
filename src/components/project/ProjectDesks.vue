@@ -19,9 +19,15 @@ let props = defineProps({
 let desks = ref([])
 let loading = ref(true)
 
+const editDesk = ref({
+  id: null,
+  name: ''
+})
+
 const search = ref('')
 
 const visible = ref(false)
+const visibleEdit = ref(false)
 
 let desk = ref(null);
 const childComponentRef = ref()
@@ -39,6 +45,18 @@ const filterTableData = computed(() =>
             data.name.toLowerCase().includes(search.value.toLowerCase())
     )
 )
+
+const startEdit = (desk) => {
+  editDesk.value.id = desk.id
+  editDesk.value.name = desk.name
+  visibleEdit.value = true
+}
+
+const saveEdit = async () => {
+  visibleEdit.value = false
+  await deskApi.editDesk(editDesk.value)
+  await getDesks()
+}
 
 const getDesk = async (id) => {
   desk.value = await taskApi.getTask(id);
@@ -78,13 +96,13 @@ onMounted(() => {
 
 <template>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table height="540" v-loading="loading" :data="filterTableData" style="width: 100%">
+  <el-table table-layout="auto" height="540" v-loading="loading" :data="filterTableData" style="width: 100%">
     <template #empty>
       <div class="flex items-center justify-center h-100%">
         <el-empty />
       </div>
     </template>
-    <el-table-column sortable prop="name" label="Название" width="600">
+    <el-table-column sortable prop="name" label="Название" min-width="600">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="toDesk(scope.row.id)"> <!-- Клик на проект -->
           <el-icon><DataBoard /></el-icon>
@@ -93,7 +111,6 @@ onMounted(() => {
       </template>
     </el-table-column>
     <el-table-column sortable prop="id" label="ID" width="180"/>
-    <el-table-column prop="" label="Владелец" width="324"/>
     <el-table-column fixed="right" width="60">
       <template #header>
         <el-popover :visible="visible" placement="left-start" :width="300"> <!-- Создание проекта -->
@@ -118,7 +135,19 @@ onMounted(() => {
           </template>
           <div class="settings">
             <el-button @click="toDesk(scope.row.id)" class="setting_button">Подробнее</el-button>
-            <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
+            <el-popover :visible="visibleEdit" placement="right-start" :width="250" trigger="click">
+              <template #reference>
+                <el-button @click="startEdit(scope.row)" class="setting_button" style="margin-top: 5px">Изменить название</el-button>
+              </template>
+              <header class="crp-header">
+                <h3 style="margin: 0">Изменить название</h3>
+              </header>
+              <el-input v-model="editDesk.name" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
+              <div style="text-align: right; margin: 0">
+                <el-button :disabled="!editDesk.name" type="primary" @click="saveEdit"
+                >Сохранить</el-button>
+              </div>
+            </el-popover>
             <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
           </div>
 

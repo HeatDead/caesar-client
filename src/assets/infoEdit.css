@@ -1,0 +1,48 @@
+.container {
+    display: flex;
+    flex-flow: column;
+    margin-bottom: 35px;
+}
+
+.task-buttons {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+}
+
+.task-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.description {
+    max-width: 100px;
+}
+
+.box-item {
+    display: flex;
+    margin-bottom: 15px;
+    justify-content: space-between;
+    align-items: center;
+    height: 32px;
+}
+
+.item-value {
+    width: 220px;
+}
+
+.user-name {
+    max-width: 210px;
+}
+
+.base {
+    width: 220px;
+}
+
+.crp-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px !important;
+    font-family: 'Roboto', sans-serif;
+}

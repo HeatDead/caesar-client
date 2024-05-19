@@ -19,7 +19,7 @@ onMounted(() => {
   <RouterLink to="/users/add">
     <el-button>Добавить</el-button>
   </RouterLink>
-  <el-table :data="users" style="width: 100%">
+  <el-table height="600" :data="users" style="width: 100%; height: 600px">
     <el-table-column prop="login" label="Логин" width="150"/>
     <el-table-column prop="surname" label="Фамилия" width="180"/>
     <el-table-column prop="name" label="Имя" width="180"/>

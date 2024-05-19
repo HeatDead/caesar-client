@@ -59,6 +59,7 @@ onMounted(() => {
 
 <template>
   <el-breadcrumb separator="/">
+    <el-breadcrumb-item :to="{ path: '/' }">Caesar</el-breadcrumb-item>
     <el-breadcrumb-item :to="{ path: '/projects/list' }">Проекты</el-breadcrumb-item>
     <el-breadcrumb-item><a v-if="project">{{project.name}}</a></el-breadcrumb-item>
   </el-breadcrumb>
@@ -80,7 +81,7 @@ onMounted(() => {
             <el-card class="box-card">
               <div class="box-item">
                 <span>Статус</span>
-                <span class="item-value"><ProjectStatus/></span>
+                <span class="item-value"><ProjectStatus :status="project.status"/></span>
               </div>
               <div class="box-item">
                 <span>Дата начала</span>

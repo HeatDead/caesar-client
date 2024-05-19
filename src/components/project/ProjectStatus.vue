@@ -2,7 +2,9 @@
 import {Document, DocumentAdd, DocumentChecked, DocumentDelete} from "@element-plus/icons-vue";
 import {ref} from "vue";
 
-const status = ref('NEW')
+let props = defineProps({
+  status: String
+})
 </script>
 
 <template>

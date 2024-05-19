@@ -4,24 +4,47 @@ import {defineExpose, ref} from "vue";
 import * as userApi from "@/api/userApi";
 import {ElMessage, ElMessageBox} from "element-plus";
 import {throwSuccess} from "@/config/notifications";
+import groupApi from "@/api/groupApi";
 
 const drawer = ref(false)
 const edit = ref(false)
 const newPass = ref()
 
-const editUser = ref()
+const groups = ref()
 
-const open = () => {
+const editUser = ref()
+const selectedGroups = ref([])
+
+const open = async () => {
+  await getGroups()
+  selectedGroups.value = []
+  for (let i = 0; i < props.user.groups.length; i++)
+    selectedGroups.value.push(props.user.groups[i].id)
   drawer.value = true
 }
 
+const openEdit = async () => {
+  await open()
+  startEdit()
+}
+
+const getGroups = async () => {
+  groupApi.getGroups().then((data) => {
+    groups.value = data
+  })
+}
+
 defineExpose({
-  open
+  open,
+  openEdit
 })
 
 const startEdit = () => {
   edit.value = true
   editUser.value = {...props.user}
+  selectedGroups.value = []
+  for (let i = 0; i < editUser.value.groups.length; i++)
+    selectedGroups.value.push(editUser.value.groups[i].id)
 }
 
 const cancelEdit = () => {
@@ -29,7 +52,7 @@ const cancelEdit = () => {
 }
 
 const saveEdit = async () => {
-  await userApi.editUser(editUser.value).then(() => {
+  await userApi.editUser(editUser.value, selectedGroups.value).then(() => {
     props.reload()
     edit.value = false;
   })
@@ -52,7 +75,7 @@ const editPassword = async () => {
       }
   )
       .then(async () => {
-        await userApi.editPassword({username:editUser.value.username, password:newPass.value})
+        await userApi.editPassword({username:props.user.username, password:newPass.value})
       })
       .catch(() => {
         ElMessage({
@@ -85,7 +108,7 @@ const handleClose = () => {
         <h2 style="color: var(--el-text-color-primary); margin-left: 10px">Пользователь</h2>
       </div>
     </template>
-    <div v-if="user" style="height: 90%">
+    <div v-if="user" class="container">
       <el-divider/>
       <div class="task-container">
         <div class="box-item">
@@ -131,6 +154,45 @@ const handleClose = () => {
             />
           </el-select></span>
         </div>
+        <div class="box-item">
+          <span>Группы</span>
+          <span v-if="!edit" class="item-value">
+              <el-icon v-if="!user.groups"><SemiSelect/></el-icon>
+              <span v-else><el-select
+                  multiple
+                  collapse-tags
+                  collapse-tags-tooltip
+                  filterable
+                  disabled
+                  v-model="selectedGroups"
+                  placeholder="Группы"
+                  style="width: 100%; margin-bottom: 10px"
+              >
+            <el-option
+                v-for="group in groups"
+                :key="group.id"
+                :label="group.name"
+                :value="group.id"
+            />
+          </el-select></span>
+            </span>
+          <span v-else class="item-value"><el-select
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              filterable
+              v-model="selectedGroups"
+              placeholder="Группы"
+              style="width: 100%; margin-bottom: 10px"
+          >
+            <el-option
+                v-for="group in groups"
+                :key="group.id"
+                :label="group.name"
+                :value="group.id"
+            />
+          </el-select></span>
+        </div>
         <div v-if="edit" class="box-item">
           <el-input style="width: 250px" v-model="newPass" type="password" show-password></el-input>
           <el-button @click="editPassword" class="item-value" type="danger">Сменить пароль</el-button>
@@ -145,30 +207,5 @@ const handleClose = () => {
 </template>
 
 <style scoped>
-.task-buttons {
-  margin-top: auto;
-  margin-left: auto;
-}
-
-.task-container {
-  display: flex;
-  flex-direction: column;
-  height: 95%;
-}
-
-.description {
-  max-width: 100px;
-}
-
-.box-item {
-  display: flex;
-  margin-bottom: 15px;
-  justify-content: space-between;
-  align-items: center;
-  height: 32px;
-}
-
-.item-value {
-  width: 250px;
-}
+@import "@/assets/infoEdit.css";
 </style>

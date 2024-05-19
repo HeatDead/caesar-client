@@ -26,14 +26,30 @@ const addDesk = async (deskName, projectId) => {
     })
 }
 
-const addPanel = async (panelName, deskId) => {
+const editDesk = async (desk) => {
+    await instance.post("/desk/edit", {
+        id: desk.id,
+        name: desk.name
+    }).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Изменения внесены')
+    })
+}
+
+const addPanel = async (panelName, deskId, status) => {
     await instance.post("/desk/panel", {
         name: panelName,
-        deskId: deskId
+        deskId: deskId,
+        status: status
     }).then((response) => {
         if(response.status === 200)
             throwSuccess('Панель создана')
     })
+}
+
+const getAvailableStatuses = async (deskId) => {
+    let res = await instance.get("/desk/statuses?id=" + deskId)
+    return res.data
 }
 
 const getPanelsByDesk = async (id) => {
@@ -59,5 +75,6 @@ const removeTaskFromPanel = async (panelId, taskId) => {
 }
 
 export default {
-    getDesks, getDesk, getDesksByProject, addDesk, addPanel, getPanelsByDesk, addTaskToPanel, removeTaskFromPanel
+    getDesks, getDesk, editDesk, getDesksByProject, addDesk, addPanel, getPanelsByDesk,
+    addTaskToPanel, removeTaskFromPanel, getAvailableStatuses
 }

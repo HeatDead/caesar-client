@@ -2,6 +2,7 @@
 import {ref} from "vue";
 import authApi from "@/api/authApi";
 import {useAuthStore} from "@/stores/user";
+import {throwError} from "@/config/notifications";
 
 const ruleFormRef = ref()
 

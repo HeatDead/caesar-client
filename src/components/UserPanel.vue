@@ -27,7 +27,7 @@ let props = defineProps({
   width: 150px;
   box-sizing: border-box;
   border: 1px solid var(--el-border-color);
-  color: #eeeeee;
+  color: var(--el-text-color-primary);;
   font-size: 14px;
   padding: 2px 8px;
   align-items: center;

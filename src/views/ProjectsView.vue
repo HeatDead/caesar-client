@@ -40,6 +40,12 @@ const cellClick = (cell) => {
   console.log(cell)
 }
 
+const deleteProject = (id) => {
+  projectF.deleteProject(id).then(() => {
+    getProjects()
+  })
+}
+
 onMounted(() => {
   getProjects()
 })
@@ -47,17 +53,18 @@ onMounted(() => {
 
 <template>
   <el-breadcrumb separator="/">
+    <el-breadcrumb-item :to="{ path: '/' }">Caesar</el-breadcrumb-item>
     <el-breadcrumb-item>Проекты</el-breadcrumb-item>
   </el-breadcrumb>
   <h2>Проекты</h2>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table height="600" :data="filterTableData" style="width: 100%" >
+  <el-table height="600" :data="filterTableData" table-layout="auto" style="width: 100%" >
     <template #empty>
       <div class="flex items-center justify-center h-100%">
         <el-empty />
       </div>
     </template>
-    <el-table-column sortable prop="name" label="Название" width="310">
+    <el-table-column sortable prop="name" label="Название">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="router.push('/projects/' + scope.row.id)"> <!-- Клик на проект -->
           <el-icon><Collection /></el-icon>
@@ -67,7 +74,7 @@ onMounted(() => {
     </el-table-column>
     <el-table-column prop="" label="Статус" width="134">
       <template #default="scope">
-        <ProjectStatus/>
+        <ProjectStatus :status="scope.row.status"/>
       </template>
     </el-table-column>
     <el-table-column prop="author.username" label="Автор" width="180">
@@ -120,14 +127,13 @@ onMounted(() => {
         </el-popover>
       </template>
       <template #default="scope">
-        <el-popover placement="right-start" hide-after="0" :width="250" trigger="click"> <!-- Настройки проекта -->
+        <el-popover placement="right-start" :width="250" trigger="click"> <!-- Настройки проекта -->
           <template #reference>
             <el-button style="width: 35px" bg text><el-icon><MoreFilled/></el-icon></el-button>
           </template>
           <div class="settings">
             <el-button @click="router.push('/projects/' + scope.row.id)" class="setting_button">Подробнее</el-button>
-            <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
-            <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button>
+            <el-button @click="deleteProject(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button>
           </div>
         </el-popover>
       </template>

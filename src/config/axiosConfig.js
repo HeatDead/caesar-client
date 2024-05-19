@@ -16,10 +16,12 @@ instance.interceptors.request.use(async (config) => {
 });
 
 instance.interceptors.response.use(null, (error) => {
-    console.log(error)
-    if (error.response.status === 401) {
-        useAuthStore().logout()
-    } else if(error.response.status === 403) {
-        throwError('Вам не доступно данное действие. Если это не так, обратитесь к администратору.')
+    if (error.response) {
+        if (error.response.status === 401) {
+            useAuthStore().logout()
+        } else if (error.response.status === 403) {
+            throwError('Вам не доступно данное действие. Если это не так, обратитесь к администратору.')
+        }
+        return error.response
     }
 })

@@ -5,7 +5,7 @@ import TasksView from "@/views/TasksView.vue";
 import AdminView from "@/views/AdminView.vue";
 import AdminUsers from "@/components/admin/user/Users.vue";
 import AdminProjects from "@/components/admin/Projects.vue";
-import AdminRoles from "@/components/admin/role/Roles.vue";
+import AdminRoles from "@/views/admin/RolesView.vue";
 import AddUser from "@/components/admin/AddUser.vue";
 import LoginView from "@/views/LoginView.vue";
 import AddProject from "@/components/admin/AddProject.vue";
@@ -17,8 +17,10 @@ import ProjectView from "@/views/ProjectView.vue";
 import ProjectTasks from "@/components/project/ProjectTasks.vue";
 import DeskView from "@/views/DeskView.vue";
 import ProjectDesks from "@/components/project/ProjectDesks.vue";
-import UsersView from "@/views/UsersView.vue";
-import Roles from "@/components/admin/role/Roles.vue";
+import UsersView from "@/views/admin/UsersView.vue";
+import Roles from "@/views/admin/RolesView.vue";
+import GroupsView from "@/views/admin/GroupsView.vue";
+import SettingsView from "@/views/admin/SettingsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -93,22 +95,12 @@ const router = createRouter({
       component: Roles
     },
     {
-      path: "/admin",
-      component: AdminView,
-      children: [
-        {
-          path: "/users/add",
-          component: AddUser
-        },
-        {
-          path: "projects",
-          component: AdminProjects
-        },
-        {
-          path: "/projects/add",
-          component: AddProject
-        },
-      ]
+      path: "/admin/groups",
+      component: GroupsView
+    },
+    {
+      path: "/admin/settings",
+      component: SettingsView
     },
   ]
 })

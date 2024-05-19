@@ -1,13 +1,9 @@
 <script setup>
-import {computed, onMounted} from "vue";
-import axios from "axios";
-import {ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import * as userApi from "@/api/userApi";
-import {Close, Collection, MoreFilled, Plus, Search, User} from "@element-plus/icons-vue";
+import {Close, Lock, MoreFilled, Plus, Search, Unlock, User} from "@element-plus/icons-vue";
 import router from "@/router";
-import ProjectStatus from "@/components/project/ProjectStatus.vue";
 import * as authApi from "@/api/authApi";
-import RoleInfoEdit from "@/components/admin/role/RoleInfoEdit.vue";
 import UserInfoEdit from "@/components/admin/user/UserInfoEdit.vue";
 
 const childComponentRef = ref()
@@ -52,7 +48,7 @@ const getRoles = async () => {
 }
 
 const addUser = async () => {
-  await authApi.register(newUser.value).then(() => {
+  await authApi.register(newUser.value).then((resp) => {
     getUsers()
     closeAdd()
   })
@@ -65,13 +61,29 @@ const closeAdd = () => {
 
 const loadUser = async (username) => {
   user.value = await userApi.getUserByUsername(username)
+  console.log(user.value)
   childComponentRef.value.open()
+}
+
+const loadUserEdit = async (username) => {
+  user.value = await userApi.getUserByUsername(username)
+  childComponentRef.value.openEdit()
 }
 
 const reload = async () => {
   await getRoles()
   await getUsers()
   user.value = await userApi.getUserByUsername(user.value.username)
+}
+
+const blockUser = async (id) => {
+  await userApi.blockUser(id)
+  await getUsers()
+}
+
+const unblockUser = async (id) => {
+  await userApi.unblockUser(id)
+  await getUsers()
 }
 
 onMounted(() => {
@@ -87,11 +99,18 @@ onMounted(() => {
   </el-breadcrumb>
   <h2>Пользователи</h2>
   <el-input :prefix-icon="Search" id="search" label="search" name="search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table :data="filterTableData" style="width: 100%" >
+  <el-table height="600" :data="filterTableData" style="width: 100%" >
+    <template #empty>
+      <div class="flex items-center justify-center h-100%">
+        <el-empty />
+      </div>
+    </template>
     <el-table-column sortable prop="username" label="Логин" width="220">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="loadUser(scope.row.username)"> <!-- Клик на проект -->
-          <el-icon><User /></el-icon>
+          <el-icon style="margin-right: 10px"><User /></el-icon>
+          <el-icon v-if="scope.row.disabled"><Lock /></el-icon>
+          <el-icon v-else><Unlock /></el-icon>
           <span style="margin-left: 10px"> {{scope.row.username}}</span>
         </div>
       </template>
@@ -134,14 +153,16 @@ onMounted(() => {
         </el-popover>
       </template>
       <template #default="scope">
-        <el-popover placement="right-start" hide-after="0" :width="250" trigger="click"> <!-- Настройки проекта -->
+        <el-popover placement="right-start" :width="250" trigger="click"> <!-- Настройки проекта -->
           <template #reference>
             <el-button style="width: 35px" bg text><el-icon><MoreFilled/></el-icon></el-button>
           </template>
           <div class="settings">
-            <el-button @click="router.push('/projects/' + scope.row.id)" class="setting_button">Подробнее</el-button>
-            <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
-            <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button>
+            <el-button @click="loadUser(scope.row.username)" class="setting_button">Подробнее</el-button>
+            <el-button @click="loadUserEdit(scope.row.username)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
+            <el-button v-if="!scope.row.disabled" @click="blockUser(scope.row.username)" class="setting_button" style="margin-top: 5px" type="danger">Заблокировать</el-button>
+            <el-button v-else @click="unblockUser(scope.row.username)" class="setting_button" style="margin-top: 5px" type="danger">Разблокировать</el-button>
+            <!-- <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button> !-->
           </div>
         </el-popover>
       </template>

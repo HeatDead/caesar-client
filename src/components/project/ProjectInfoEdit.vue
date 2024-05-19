@@ -20,6 +20,8 @@ const open = async () => {
   drawer.value = true
   edit.value = true
   editProject.value = {...props.project}
+  if(editProject.value.responsible)
+    editProject.value.responsible = editProject.value.responsible.username
   projectUsers.value = await projectApi.getEmployees(props.project.id)
 }
 
@@ -32,6 +34,7 @@ const cancelEdit = () => {
 }
 
 const saveEdit = async () => {
+  console.log(editProject.value)
   await projectApi.editProject(editProject.value).then(() => {
     props.reload()
     handleClose()
@@ -65,11 +68,29 @@ const handleClose = () => {
     <div>
       <el-input style="padding-bottom: 25px" placeholder="Описание" maxlength="4096" show-word-limit v-if="edit" type="textarea" v-model="editProject.description" :autosize="{ minRows: 5 }" resize="none"></el-input>
     </div>
-    <div v-if="project" style="height: 90%">
+    <div v-if="project" class="container">
       <el-divider/>
       <div class="task-container">
         <div class="box-item">
           <span>Статус</span>
+          <span class="item-value"><el-select v-model="editProject.status" style="width: 220px">
+              <el-option
+                  key="NEW"
+                  label="Новый"
+                  value="NEW"/>
+              <el-option
+                  key="IN_WORK"
+                  label="В работе"
+                  value="IN_WORK"/>
+              <el-option
+                  key="COMPLETED"
+                  label="Завершен"
+                  value="COMPLETED"/>
+              <el-option
+                  key="CANCELED"
+                  label="Отменен"
+                  value="CANCELED"/>
+            </el-select></span>
         </div>
         <div class="box-item">
           <span>Дата начала</span>
@@ -125,30 +146,5 @@ const handleClose = () => {
 </template>
 
 <style scoped>
-.task-buttons {
-  margin-top: auto;
-  margin-left: auto;
-}
-
-.task-container {
-  display: flex;
-  flex-direction: column;
-  height: 95%;
-}
-
-.description {
-  max-width: 100px;
-}
-
-.box-item {
-  display: flex;
-  margin-bottom: 15px;
-  justify-content: space-between;
-  align-items: center;
-  height: 32px;
-}
-
-.item-value {
-  width: 250px;
-}
+@import "@/assets/infoEdit.css";
 </style>

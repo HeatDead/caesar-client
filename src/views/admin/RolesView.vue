@@ -31,6 +31,11 @@ const loadRole = async (id) => {
   childComponentRef.value.open()
 }
 
+const loadRoleEdit = async (id) => {
+  role.value = await userApi.getRole(id)
+  childComponentRef.value.openEdit()
+}
+
 const reload = async () => {
   await getRoles()
   role.value = await userApi.getRole(role.value.id)
@@ -54,6 +59,11 @@ const addRole = async () => {
   })
 }
 
+const deleteRole = async (id) => {
+  await userApi.deleteRole(id)
+  await getRoles()
+}
+
 onMounted(() => {
   getRoles()
 })
@@ -66,7 +76,12 @@ onMounted(() => {
   </el-breadcrumb>
   <h2>Роли</h2>
   <el-input :prefix-icon="Search" v-model="search" style="width: 400px" placeholder="Поиск" />
-  <el-table :data="filterTableData" style="width: 100%">
+  <el-table width="100%" height="600" :data="filterTableData" style="width: 100%">
+    <template #empty>
+      <div class="flex items-center justify-center h-100%">
+        <el-empty />
+      </div>
+    </template>
     <el-table-column prop="name" label="Название" width="600">
       <template #default="scope">
         <div style="display: flex; align-items: center" class="clickable" @click="loadRole(scope.row.id)"> <!-- Клик на проект -->
@@ -101,8 +116,8 @@ onMounted(() => {
           </template>
           <div class="settings">
             <el-button @click="loadRole(scope.row.id)" class="setting_button">Подробнее</el-button>
-            <el-button class="setting_button" style="margin-top: 5px">Изменить</el-button>
-            <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
+            <el-button @click="loadRoleEdit(scope.row.id)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
+            <el-button @click="deleteRole(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
           </div>
 
         </el-popover>

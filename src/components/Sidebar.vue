@@ -53,7 +53,7 @@ const logout = () => {
             <span>Доски задач</span>
           </el-menu-item>
         </RouterLink>
-        <el-sub-menu index="1-1">
+        <el-sub-menu v-if="useAuthStore().checkPermission('ADMINISTRATOR')" index="1-1">
           <template #title>
             <el-icon><setting /></el-icon>
             <span>Администрирование</span>

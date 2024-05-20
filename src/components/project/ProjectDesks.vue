@@ -11,6 +11,7 @@ import router from "@/router";
 import taskApi from "@/api/taskApi";
 import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
 import deskApi from "@/api/deskApi";
+import {useAuthStore} from "@/stores/user";
 
 let props = defineProps({
   projectId: String
@@ -89,6 +90,11 @@ const toDesk = (id) => {
   router.push(`/projects/${props.projectId}/desk/${id}`)
 }
 
+const deleteDesk = async (id) => {
+  await deskApi.deleteDesk(id)
+  await getDesks()
+}
+
 onMounted(() => {
   getDesks()
 })
@@ -99,7 +105,7 @@ onMounted(() => {
   <el-table table-layout="auto" height="540" v-loading="loading" :data="filterTableData" style="width: 100%">
     <template #empty>
       <div class="flex items-center justify-center h-100%">
-        <el-empty />
+        <el-empty description="Нет данных"/>
       </div>
     </template>
     <el-table-column sortable prop="name" label="Название" min-width="600">
@@ -124,7 +130,7 @@ onMounted(() => {
             >Создать</el-button>
           </div>
           <template #reference>
-            <el-button @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
+            <el-button v-if="useAuthStore().checkPermission('DESK_CREATE')" @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
           </template>
         </el-popover>
       </template>
@@ -137,7 +143,7 @@ onMounted(() => {
             <el-button @click="toDesk(scope.row.id)" class="setting_button">Подробнее</el-button>
             <el-popover :visible="visibleEdit" placement="right-start" :width="250" trigger="click">
               <template #reference>
-                <el-button @click="startEdit(scope.row)" class="setting_button" style="margin-top: 5px">Изменить название</el-button>
+                <el-button v-if="useAuthStore().checkPermission('DESK_UPDATE')" @click="startEdit(scope.row)" class="setting_button" style="margin-top: 5px">Изменить название</el-button>
               </template>
               <header class="crp-header">
                 <h3 style="margin: 0">Изменить название</h3>
@@ -148,7 +154,7 @@ onMounted(() => {
                 >Сохранить</el-button>
               </div>
             </el-popover>
-            <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
+            <el-button v-if="useAuthStore().checkPermission('DESK_DELETE')" @click="deleteDesk(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
           </div>
 
         </el-popover>

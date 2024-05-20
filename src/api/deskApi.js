@@ -74,7 +74,20 @@ const removeTaskFromPanel = async (panelId, taskId) => {
     })
 }
 
+const deletePanel = async (id) => {
+    await instance.delete("/desk/panel/delete?id=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Панель удалена')
+    })
+}
+
+const deleteDesk = async (id) => {
+    await instance.delete("/desk/delete?id=" + id).then((response) => {
+        if(response.status === 200)
+            throwSuccess('Доска удалена')
+    })
+}
 export default {
     getDesks, getDesk, editDesk, getDesksByProject, addDesk, addPanel, getPanelsByDesk,
-    addTaskToPanel, removeTaskFromPanel, getAvailableStatuses
+    addTaskToPanel, removeTaskFromPanel, getAvailableStatuses, deletePanel, deleteDesk
 }

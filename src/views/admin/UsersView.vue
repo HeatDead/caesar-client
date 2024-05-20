@@ -102,7 +102,7 @@ onMounted(() => {
   <el-table height="600" :data="filterTableData" style="width: 100%" >
     <template #empty>
       <div class="flex items-center justify-center h-100%">
-        <el-empty />
+        <el-empty description="Нет данных"/>
       </div>
     </template>
     <el-table-column sortable prop="username" label="Логин" width="220">

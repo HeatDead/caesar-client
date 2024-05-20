@@ -10,6 +10,7 @@ import ProjectInfoEdit from "@/components/project/ProjectInfoEdit.vue";
 import * as userApi from "@/api/userApi";
 import ProjectEmployees from "@/components/project/ProjectEmployees.vue";
 import UserPanel from "@/components/UserPanel.vue";
+import {useAuthStore} from "@/stores/user";
 
 const route = useRoute()
 const id = route.params.id;
@@ -74,9 +75,9 @@ onMounted(() => {
           <div class="about">
             <el-input style="margin-right: 10px" placeholder="Описание" type="textarea" v-model="project.description" :autosize="{ minRows: 11 }" resize="none" readonly></el-input>
             <div class="options">
-              <el-button @click="loadProject" class="button" style="width: 32px" text bg><el-icon><Edit/></el-icon></el-button>
-              <el-button @click="loadEmployees" class="button" style="width: 32px; margin-left: 0; margin-top: 8px" text bg><el-icon><user/></el-icon></el-button>
-              <el-button class="button" style="width: 32px; margin-left: 0; margin-top: 8px" text bg><el-icon><DataAnalysis/></el-icon></el-button>
+              <el-button v-if="useAuthStore().checkPermission('PROJECT_UPDATE')" @click="loadProject" class="button" style="width: 32px; margin-bottom: 8px" text bg><el-icon><Edit/></el-icon></el-button>
+              <el-button @click="loadEmployees" class="button" style="width: 32px; margin-left: 0; margin-bottom: 8px" text bg><el-icon><user/></el-icon></el-button>
+              <el-button class="button" style="width: 32px; margin-left: 0; margin-bottom: 8px" text bg><el-icon><DataAnalysis/></el-icon></el-button>
             </div>
             <el-card class="box-card">
               <div class="box-item">

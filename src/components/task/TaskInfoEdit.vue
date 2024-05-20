@@ -8,6 +8,7 @@ import UserPanel from "@/components/UserPanel.vue";
 import TaskType from "@/components/task/TaskType.vue";
 import TaskPriority from "@/components/task/TaskPriority.vue";
 import groupApi from "@/api/groupApi";
+import {useAuthStore} from "@/stores/user";
 
 const drawer = ref(false)
 const edit = ref(false)
@@ -104,7 +105,7 @@ const handleClose = () => {
   >
     <template #header>
       <div v-if="!edit" style="display: flex">
-        <el-button @click="startEdit" type="info" class="w-20" link>
+        <el-button v-if="useAuthStore().checkPermission('TASK_UPDATE')" @click="startEdit" type="info" class="w-20" link>
           <el-icon>
             <Edit/>
           </el-icon>

@@ -6,6 +6,7 @@ import taskApi from "@/api/taskApi";
 import * as userApi from "@/api/userApi";
 import TaskStatus from "@/components/task/TaskStatus.vue";
 import projectApi from "@/api/projectApi";
+import {useAuthStore} from "@/stores/user";
 
 const drawer = ref(false)
 const edit = ref(false)
@@ -109,7 +110,7 @@ const handleClose = () => {
       <el-table table-layout="auto" height="600" v-loading="loading" :data="projectUsers" style="width: 100%">
         <template #empty>
           <div class="flex items-center justify-center h-100%">
-            <el-empty />
+            <el-empty description="Нет данных"/>
           </div>
         </template>
         <el-table-column sortable prop="surname" label="Сотрудник">
@@ -149,20 +150,8 @@ const handleClose = () => {
                 >Принять</el-button>
               </div>
               <template #reference>
-                <el-button @click="visible = true" class="button" style="width: 35px" text bg><el-icon><Tools/></el-icon></el-button>
+                <el-button v-if="useAuthStore().checkPermission('PROJECT_UPDATE')" @click="visible = true" class="button" style="width: 35px" text bg><el-icon><Tools/></el-icon></el-button>
               </template>
-            </el-popover>
-          </template>
-          <template #default="scope">
-            <el-popover placement="right-start" :width="250" trigger="click">
-              <template #reference>
-                <el-button style="width: 35px" bg text><el-icon><MoreFilled/></el-icon></el-button>
-              </template>
-              <div class="settings">
-                <el-button @click="toDesk(scope.row.id)" class="setting_button">Подробнее</el-button>
-                <el-button class="setting_button" style="margin-top: 5px" type="danger">Убрать с проекта</el-button>
-              </div>
-
             </el-popover>
           </template>
         </el-table-column>

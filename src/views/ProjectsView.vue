@@ -6,6 +6,7 @@ import router from "@/router";
 import {Close, Collection, MoreFilled, Plus, Search} from "@element-plus/icons-vue";
 import ProjectStatus from "@/components/project/ProjectStatus.vue";
 import UserPanel from "@/components/UserPanel.vue";
+import {useAuthStore} from "@/stores/user";
 
 let projects = ref([])
 const search = ref('')
@@ -61,7 +62,7 @@ onMounted(() => {
   <el-table height="600" :data="filterTableData" table-layout="auto" style="width: 100%" >
     <template #empty>
       <div class="flex items-center justify-center h-100%">
-        <el-empty />
+        <el-empty description="Нет данных"/>
       </div>
     </template>
     <el-table-column sortable prop="name" label="Название">
@@ -122,7 +123,7 @@ onMounted(() => {
             >Создать</el-button>
           </div>
           <template #reference>
-            <el-button @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
+            <el-button v-if="useAuthStore().checkPermission('PROJECT_CREATE')" @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
           </template>
         </el-popover>
       </template>
@@ -133,7 +134,7 @@ onMounted(() => {
           </template>
           <div class="settings">
             <el-button @click="router.push('/projects/' + scope.row.id)" class="setting_button">Подробнее</el-button>
-            <el-button @click="deleteProject(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button>
+            <el-button v-if="useAuthStore().checkPermission('PROJECT_DELETE')" @click="deleteProject(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button>
           </div>
         </el-popover>
       </template>

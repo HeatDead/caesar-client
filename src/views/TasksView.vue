@@ -21,6 +21,7 @@ import TaskStatus from "@/components/task/TaskStatus.vue";
 import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
 import taskApi from "@/api/taskApi";
 import projectApi from "@/api/projectApi";
+import {useAuthStore} from "@/stores/user";
 
 let tasks = ref([])
 let loading = ref(true)
@@ -125,7 +126,7 @@ onMounted(() => {
   <el-table height="600" v-loading="loading" :data="filterTableData" table-layout="auto" style="width: 100%">
     <template #empty>
       <div class="flex items-center justify-center h-100%">
-        <el-empty />
+        <el-empty description="Нет данных"/>
       </div>
     </template>
     <el-table-column sortable prop="name" label="Задача">
@@ -211,7 +212,7 @@ onMounted(() => {
             >Создать</el-button>
           </div>
           <template #reference>
-            <el-button @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
+            <el-button v-if="useAuthStore().checkPermission('TASK_CREATE')" @click="visible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
           </template>
         </el-popover>
       </template>
@@ -222,8 +223,8 @@ onMounted(() => {
           </template>
           <div class="settings">
             <el-button @click="loadTask(scope.row.id)" class="setting_button">Подробнее</el-button>
-            <el-button @click="editTask(scope.row.id)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
-            <el-button @click="deleteTask(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
+            <el-button v-if="useAuthStore().checkPermission('TASK_UPDATE')" @click="editTask(scope.row.id)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
+            <el-button v-if="useAuthStore().checkPermission('TASK_DELETE')" @click="deleteTask(scope.row.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
           </div>
 
         </el-popover>

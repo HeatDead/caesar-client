@@ -19,6 +19,7 @@ import projectApi from "@/api/projectApi";
 import taskApi from "@/api/taskApi";
 import {Bug} from "@vicons/tabler";
 import TaskInfoEdit from "@/components/task/TaskInfoEdit.vue";
+import {useAuthStore} from "@/stores/user";
 
 const route = useRoute()
 const id = route.params.deskId;
@@ -101,6 +102,8 @@ const getProject = async () => {
 const addPanel = async () => {
   await deskApi.addPanel(newPanelName.value, id, newPanelStatus.value).then(() => {
     getPanels()
+    getStatuses()
+    newPanelStatus.value = null
     newPanelVisible.value = false
     newPanelName.value = ''
   })
@@ -186,6 +189,12 @@ const deleteTask = (id) => {
   })
 }
 
+const deletePanel = async (id) => {
+  await deskApi.deletePanel(id)
+  await getPanels()
+  await getStatuses()
+}
+
 onMounted(() => {
   getDesk()
   getPanels()
@@ -218,7 +227,7 @@ onMounted(() => {
               <el-icon v-if="panel.status === 'IN_WORK'"><Loading/></el-icon>
               <el-icon v-if="panel.status === 'COMPLETED'"><CircleCheck/></el-icon>
               <el-icon v-if="panel.status === 'NEED_INFO'"><Warning/></el-icon>
-              <el-icon v-if="panel.status === 'CLOSED'"><CircleClose/></el-icon>
+              <el-icon v-if="panel.status === 'CANCELED'"><CircleClose/></el-icon>
               <span style="margin-left: 10px">{{panel.name}}</span>
             </span>
             <div>
@@ -255,7 +264,16 @@ onMounted(() => {
                   <el-button @click="openAddTask(panel)" class="button" type="success" style="width: 35px" text><el-icon><Plus/></el-icon></el-button>
                 </template>
               </el-popover>
-              <el-button class="button" style="width: 35px; margin-left: 5px" text><el-icon><MoreFilled/></el-icon></el-button>
+              <el-popover placement="right-start" :width="250" trigger="click"> <!-- Настройки проекта -->
+                <template #reference>
+                  <el-button v-if="useAuthStore().checkPermission('DESK_UPDATE')" class="button" style="width: 35px; margin-left: 5px" text><el-icon><MoreFilled/></el-icon></el-button>
+                </template>
+                <div class="settings">
+                  <el-button class="setting_button">Изменить</el-button>
+                  <el-button @click="deletePanel(panel.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button>
+                  <!-- <el-button class="setting_button" style="margin-top: 5px" type="danger">Удалить</el-button> !-->
+                </div>
+              </el-popover>
             </div>
           </div>
         </template>
@@ -314,7 +332,7 @@ onMounted(() => {
           >Создать</el-button>
         </div>
         <template #reference>
-          <el-button @click="newPanelVisible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
+          <el-button v-if="useAuthStore().checkPermission('DESK_UPDATE')" @click="newPanelVisible = true" class="button" type="success" style="width: 35px" text bg><el-icon><Plus/></el-icon></el-button>
         </template>
       </el-popover>
     </div>

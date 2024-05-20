@@ -6,7 +6,8 @@ export const useAuthStore = defineStore('auth', () => {
     const token = ref('')
     const userDetails = ref({username: "",
     name: "",
-    surname: ""})
+    surname: "",
+    role: []})
 
     async function setToken(tk) {
         token.value = tk
@@ -16,7 +17,13 @@ export const useAuthStore = defineStore('auth', () => {
     async function loadDetails() {
         let details = await userApi.getMyDetails().then((res) => {
             setDetails(res)
+            console.log(userDetails.value)
         })
+    }
+
+    function checkPermission(permission) {
+        if (!userDetails.value.role.permissions) return false
+        return userDetails.value.role.permissions.includes(permission)
     }
 
     function setDetails(details) {
@@ -32,5 +39,5 @@ export const useAuthStore = defineStore('auth', () => {
         localStorage.removeItem('token')
     }
 
-    return {token, userDetails, setToken, loadToken, logout, loadDetails}
+    return {token, userDetails, setToken, loadToken, logout, loadDetails, checkPermission}
 })

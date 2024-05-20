@@ -7,10 +7,13 @@ import {Close, DataBoard, MoreFilled, Plus, Search} from "@element-plus/icons-vu
 import taskApi from "@/api/taskApi";
 import deskApi from "@/api/deskApi";
 import {useAuthStore} from "@/stores/user";
+import projectApi from "@/api/projectApi";
 let desks = ref([])
 let loading = ref(true)
 
 const search = ref('')
+
+const projects = ref()
 
 const visible = ref(false)
 const visibleEdit = ref(false)
@@ -24,6 +27,7 @@ let desk = ref(null);
 const childComponentRef = ref()
 
 const newDeskName = ref('')
+const newDesksProject = ref()
 const loadDesk = (id) => {
   childComponentRef.value.open()
   getDesk(id)
@@ -41,6 +45,10 @@ const startEdit = (desk) => {
   editDesk.value.id = desk.id
   editDesk.value.name = desk.name
   visibleEdit.value = true
+}
+
+const getProjects = async () => {
+  projects.value = await projectApi.getProjects();
 }
 
 const saveEdit = async () => {
@@ -62,10 +70,11 @@ const getDesks = async () => {
 }
 
 const addDesk = async () => {
-  await deskApi.addDesk(newDeskName.value, props.projectId).then(() => {
+  await deskApi.addDesk(newDeskName.value, newDesksProject.value).then(() => {
     visible.value = false
     getDesks()
     newDeskName.value = ''
+    newDesksProject.value = null
   })
 }
 
@@ -80,6 +89,7 @@ const deleteDesk = async (id) => {
 
 onMounted(() => {
   getDesks()
+  getProjects()
 })
 </script>
 
@@ -114,6 +124,18 @@ onMounted(() => {
             <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
           </header>
           <el-input v-model="newDeskName" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
+          <el-select
+              v-model="newDesksProject"
+              placeholder="Проект"
+              style="width: 274px; margin-bottom: 10px"
+          >
+            <el-option
+                v-for="project in projects"
+                :key="project.id"
+                :label="project.name"
+                :value="project.id"
+            />
+          </el-select>
           <div style="text-align: right; margin: 0">
             <el-button :disabled="!newDeskName" type="primary" @click="addDesk"
             >Создать</el-button>

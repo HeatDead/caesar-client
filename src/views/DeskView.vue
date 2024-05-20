@@ -51,11 +51,15 @@ const getPanels = async () => {
     panels.value = value
     loading.value = false
 
+    let tab = 'ex'
+    if(!useAuthStore().checkPermission('TASK_UPDATE') && useAuthStore().checkPermission('TASK_CREATE'))
+      tab = 'new'
+
     panels.value.forEach((panel) => {
       panel.addTaskVisible = false
       panel.addTaskSelected = null
       panel.aTasks = []
-      panel.addTab = 'ex'
+      panel.addTab = tab
       panel.newTaskName = ''
     })
   })
@@ -116,6 +120,11 @@ const addTask = async (panelId, taskId) => {
 }
 
 const addTaskToPanel = async (taskName, projectId, panelId) => {
+  if (!projectId)
+    await taskApi.addTaskToPanel(taskName, desk.value.projectEntity.id, panelId).then(() => {
+      getPanels()
+    })
+  else
   await taskApi.addTaskToPanel(taskName, projectId, panelId).then(() => {
     getPanels()
   })
@@ -128,6 +137,8 @@ const removeFromPanel = (panelId, taskId) => {
 }
 
 const startDrag = (evt, panelId, taskId) => {
+  if (!useAuthStore().checkPermission('TASK_UPDATE'))
+    return
   evt.dataTransfer.dropEffect = 'move'
   evt.dataTransfer.effectAllowed = 'move'
   evt.dataTransfer.setData('taskId', taskId)
@@ -135,6 +146,8 @@ const startDrag = (evt, panelId, taskId) => {
 }
 
 const onDrop = (evt, panelId) => {
+  if (!useAuthStore().checkPermission('TASK_UPDATE'))
+    return
   const taskId = evt.dataTransfer.getData('taskId')
   const sPanelId = evt.dataTransfer.getData('panelId')
   deskApi.removeTaskFromPanel(sPanelId, taskId).then(() => {
@@ -237,8 +250,8 @@ onMounted(() => {
                   <el-button style="width: 32px" text @click="panel.addTaskVisible = false; panel.addTaskSelected = null"><el-icon><Close/></el-icon></el-button>
                 </header>
                 <el-radio-group v-model="panel.addTab" style="margin-bottom: 10px">
-                  <el-radio-button label="ex">Существующая</el-radio-button>
-                  <el-radio-button @click="panel.addTaskSelected = null" label="new">Новая</el-radio-button>
+                  <el-radio-button v-if="useAuthStore().checkPermission('TASK_UPDATE')" label="ex">Существующая</el-radio-button>
+                  <el-radio-button v-if="useAuthStore().checkPermission('TASK_CREATE')" @click="panel.addTaskSelected = null" label="new">Новая</el-radio-button>
                 </el-radio-group>
                 <div v-if="panel.addTab === 'ex'">
                   <el-select-v2
@@ -261,7 +274,7 @@ onMounted(() => {
                   </div>
                 </div>
                 <template #reference>
-                  <el-button @click="openAddTask(panel)" class="button" type="success" style="width: 35px" text><el-icon><Plus/></el-icon></el-button>
+                  <el-button v-if="useAuthStore().checkPermission('TASK_CREATE') || useAuthStore().checkPermission('TASK_UPDATE')" @click="openAddTask(panel)" class="button" type="success" style="width: 35px" text><el-icon><Plus/></el-icon></el-button>
                 </template>
               </el-popover>
               <el-popover placement="right-start" :width="250" trigger="click"> <!-- Настройки проекта -->
@@ -301,9 +314,9 @@ onMounted(() => {
                 </template>
                 <div class="settings">
                   <el-button @click="loadTask(task.id)" class="setting_button">Подробнее</el-button>
-                  <el-button @click="editTask(task.id)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
-                  <el-button @click="removeFromPanel(panel.id, task.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить с панели</el-button>
-                  <el-button @click="deleteTask(task.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
+                  <el-button v-if="useAuthStore().checkPermission('TASK_UPDATE')" @click="editTask(task.id)" class="setting_button" style="margin-top: 5px">Изменить</el-button>
+                  <el-button v-if="useAuthStore().checkPermission('TASK_UPDATE')" @click="removeFromPanel(panel.id, task.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить с панели</el-button>
+                  <el-button v-if="useAuthStore().checkPermission('TASK_DELETE')" @click="deleteTask(task.id)" class="setting_button" style="margin-top: 5px" type="danger">Удалить из проекта</el-button>
                 </div>
 
               </el-popover>

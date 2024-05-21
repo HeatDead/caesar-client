@@ -137,7 +137,7 @@ const handleClose = () => {
           </span>
         </div>
         <div v-if="edit" class="task-buttons">
-          <el-button @click="saveEdit">Изменить</el-button>
+          <el-button :disabled="editProject.name.length < 4" @click="saveEdit">Изменить</el-button>
           <el-button @click="cancelEdit" type="danger">Отмена</el-button>
         </div>
       </div>

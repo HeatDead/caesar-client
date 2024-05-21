@@ -117,9 +117,9 @@ onMounted(() => {
             <h3 style="margin: 0">Создать проект</h3>
             <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
           </header>
-          <el-input v-model="newProjectName" style="margin-bottom: 10px" type="text" placeholder="Название проекта"></el-input>
+          <el-input maxlength="25" show-word-limit v-model="newProjectName" style="margin-bottom: 10px" type="text" placeholder="Название проекта"></el-input>
           <div style="text-align: right; margin: 0">
-            <el-button :disabled="!newProjectName" type="primary" @click="addProject"
+            <el-button :disabled="!newProjectName || newProjectName.length < 4" type="primary" @click="addProject"
             >Создать</el-button>
           </div>
           <template #reference>

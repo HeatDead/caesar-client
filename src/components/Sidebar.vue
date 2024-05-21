@@ -76,12 +76,6 @@ const logout = () => {
               <span>Роли</span>
             </el-menu-item>
           </RouterLink>
-          <RouterLink to="/admin/settings">
-            <el-menu-item index="8">
-              <el-icon><setting /></el-icon>
-              <span>Настройки</span>
-            </el-menu-item>
-          </RouterLink>
         </el-sub-menu>
         <el-popover
             :width="300"
@@ -115,17 +109,17 @@ const logout = () => {
                   </p>
                 </div>
               </div>
+              <el-switch
+                  v-model="useSettingsStore().isDark"
+                  inline-prompt
+                  :active-icon="Moon"
+                  :inactive-icon="Sunny"
+              />
               <el-button type="danger" @click="logout">Выйти</el-button>
             </div>
           </template>
         </el-popover>
       </el-menu>
-      <el-switch
-          v-model="useSettingsStore().isDark"
-          inline-prompt
-          :active-icon="Moon"
-          :inactive-icon="Sunny"
-      />
     </el-col>
   </el-aside>
 </template>

@@ -184,9 +184,9 @@ onMounted(() => {
             <h3 style="margin: 0">Создать задачу</h3>
             <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
           </header>
-          <el-input v-model="newTaskName" style="margin-bottom: 10px" type="text" placeholder="Название задачи"></el-input>
+          <el-input maxlength="25" show-word-limit v-model="newTaskName" style="margin-bottom: 10px" type="text" placeholder="Название задачи"></el-input>
           <div style="text-align: right; margin: 0">
-            <el-button :disabled="!newTaskName" type="primary" @click="addTask"
+            <el-button :disabled="!newTaskName || newTaskName.length < 4" type="primary" @click="addTask"
             >Создать</el-button>
           </div>
           <template #reference>

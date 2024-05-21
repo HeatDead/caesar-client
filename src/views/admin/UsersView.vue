@@ -126,11 +126,11 @@ onMounted(() => {
             <h3 style="margin: 0">Добавить пользователя</h3>
             <el-button style="width: 32px" text @click="closeAdd"><el-icon><Close/></el-icon></el-button>
           </header>
-          <el-input autocomplete="username" clearable v-model="newUser.lgn" style="margin-bottom: 10px" type="text" placeholder="Логин"></el-input>
-          <el-input show-password clearable v-model="newUser.psw" style="margin-bottom: 10px" type="password" placeholder="Пароль"></el-input>
-          <el-input clearable v-model="newUser.name" style="margin-bottom: 10px" type="text" placeholder="Имя"></el-input>
-          <el-input clearable v-model="newUser.surname" style="margin-bottom: 10px" type="text" placeholder="Фамилия"></el-input>
-          <el-input clearable v-model="newUser.patronymic" style="margin-bottom: 10px" type="text" placeholder="Отчество"></el-input>
+          <el-input maxlength="20" show-word-limit autocomplete="username" clearable v-model="newUser.lgn" style="margin-bottom: 10px" type="text" placeholder="Логин"></el-input>
+          <el-input maxlength="120" show-password clearable v-model="newUser.psw" style="margin-bottom: 10px" type="password" placeholder="Пароль"></el-input>
+          <el-input maxlength="120" clearable v-model="newUser.name" style="margin-bottom: 10px" type="text" placeholder="Имя"></el-input>
+          <el-input maxlength="120" clearable v-model="newUser.surname" style="margin-bottom: 10px" type="text" placeholder="Фамилия"></el-input>
+          <el-input maxlength="120" clearable v-model="newUser.patronymic" style="margin-bottom: 10px" type="text" placeholder="Отчество"></el-input>
           <el-select
               v-model="newUser.role"
               placeholder="Роль"
@@ -144,7 +144,7 @@ onMounted(() => {
             />
           </el-select>
           <div style="text-align: right; margin: 0">
-            <el-button :disabled="!newUser.lgn || !newUser.psw || !newUser.name || !newUser.surname || !newUser.role" type="primary" @click="addUser"
+            <el-button :disabled="!newUser.lgn || !newUser.psw || !newUser.name || !newUser.surname || !newUser.role || newUser.lgn.length < 4 || newUser.psw.length < 6" type="primary" @click="addUser"
             >Добавить</el-button>
           </div>
           <template #reference>

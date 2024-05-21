@@ -123,7 +123,7 @@ onMounted(() => {
             <h3 style="margin: 0">Создать доску</h3>
             <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
           </header>
-          <el-input v-model="newDeskName" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
+          <el-input minlength="2" maxlength="25" show-word-limit v-model="newDeskName" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
           <el-select
               v-model="newDesksProject"
               placeholder="Проект"
@@ -137,7 +137,7 @@ onMounted(() => {
             />
           </el-select>
           <div style="text-align: right; margin: 0">
-            <el-button :disabled="!newDeskName" type="primary" @click="addDesk"
+            <el-button :disabled="!newDeskName || newDeskName.length < 2 || !newDesksProject" type="primary" @click="addDesk"
             >Создать</el-button>
           </div>
           <template #reference>

@@ -124,9 +124,9 @@ onMounted(() => {
             <h3 style="margin: 0">Создать доску</h3>
             <el-button style="width: 32px" text @click="visible = false"><el-icon><Close/></el-icon></el-button>
           </header>
-          <el-input v-model="newDeskName" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
+          <el-input maxlength="25" show-word-limit v-model="newDeskName" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
           <div style="text-align: right; margin: 0">
-            <el-button :disabled="!newDeskName" type="primary" @click="addDesk"
+            <el-button :disabled="!newDeskName || newDeskName.length < 4" type="primary" @click="addDesk"
             >Создать</el-button>
           </div>
           <template #reference>
@@ -148,9 +148,9 @@ onMounted(() => {
               <header class="crp-header">
                 <h3 style="margin: 0">Изменить название</h3>
               </header>
-              <el-input v-model="editDesk.name" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
+              <el-input maxlength="25" show-word-limit v-model="editDesk.name" style="margin-bottom: 10px" type="text" placeholder="Название доски"></el-input>
               <div style="text-align: right; margin: 0">
-                <el-button :disabled="!editDesk.name" type="primary" @click="saveEdit"
+                <el-button :disabled="!editDesk.name || editDesk.name.length < 4" type="primary" @click="saveEdit"
                 >Сохранить</el-button>
               </div>
             </el-popover>

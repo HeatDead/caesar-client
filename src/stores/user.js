@@ -17,7 +17,6 @@ export const useAuthStore = defineStore('auth', () => {
     async function loadDetails() {
         let details = await userApi.getMyDetails().then((res) => {
             setDetails(res)
-            console.log(userDetails.value)
         })
     }
 
